@@ -1,0 +1,244 @@
+.carousel {
+  position: relative;
+  width: 100%;
+}
+
+.carousel-viewport {
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.carousel-container Now {
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+  margin-left: -16px;
+}
+
+.carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  padding-left: 16px;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg) 75%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  color: var(--text-h);
+  cursor: pointer;
+  z-index: 3;
+  transition: background 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease, transform 0.2s ease, box-shadow 0.25s ease,
+    opacity 0.2s ease;
+  box-shadow: 0 8px 24px -16px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme='light'] .carousel-btn {
+  box-shadow: 0 8px 24px -18px rgba(15, 25, 45, 0.25);
+}
+
+.carousel-btn:hover:not(:disabled) {
+  background: var(--bg-card);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  color: var(--accent);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.carousel-btn:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.carousel-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.carousel-btn--prev {
+  left: 14px;
+}
+
+.carousel-btn--next {
+  right: 14px;
+}
+
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: width 0.25s ease, background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.carousel-dot:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+}
+
+.carousel-dot.is-active {
+  width: 26px;
+  border-radius: 999px;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 560px) {
+  .carousel-viewport {
+    border-radius: 14px;
+  }
+
+  .carousel-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .carousel-btn--prev {
+    left: 8px;
+  }
+
+  .carousel-btn--next {
+    right: 8px;
+  }
+}
+.carousel {
+  position: relative;
+  width: 100%;
+}
+
+.carousel-viewport {
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.carousel-container {
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+  margin-left: -16px;
+}
+
+.carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  padding-left: 16px;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg) 75%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  color: var(--text-h);
+  cursor: pointer;
+  z-index: 3;
+  transition: background 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease, transform 0.2s ease, box-shadow 0.25s ease,
+    opacity 0.2s ease;
+  box-shadow: 0 8px 24px -16px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme='light'] .carousel-btn {
+  box-shadow: 0 8px 24px -18px rgba(15, 25, 45, 0.25);
+}
+
+.carousel-btn:hover:not(:disabled) {
+  background: var(--bg-card);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  color: var(--accent);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.carousel-btn:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.carousel-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.carousel-btn--prev {
+  left: 14px;
+}
+
+.carousel-btn--next {
+  right: 14px;
+}
+
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: width 0.25s ease, background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.carousel-dot:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+}
+
+.carousel-dot.is-active {
+  width: 26px;
+  border-radius: 999px;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 560px) {
+  .carousel-viewport {
+    border-radius: 14px;
+  }
+
+  .carousel-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .carousel-btn--prev {
+    left: 8px;
+  }
+
+  .carousel-btn--next {
+    right: 8px;
+  }
+}

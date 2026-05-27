@@ -927,10 +927,10 @@ function Projects() {
 
 function About() {
   const stats = [
-    { value: '20', label: 'Brands Trusted' },
-    { value: '5', label: 'Years of Experience' },
-    { value: '15', label: 'Team Members' },
-    { value: '40+', label: 'Projects Delivered' },
+    { value: '200+', label: 'Brands Trusted' },
+    { value: '12+', label: 'Years of Experience' },
+    { value: '50+', label: 'Team Members' },
+    { value: '35', label: 'Countries Served' },
   ]
 
   const values = [
@@ -1076,6 +1076,381 @@ function PerkIcon({ name }) {
   }
 }
 
+const CAREER_DEPARTMENTS = [
+  { value: 'any', label: 'Any department' },
+  { value: 'Design', label: 'Design' },
+  { value: 'Engineering', label: 'Engineering' },
+  { value: 'Product', label: 'Product' },
+  { value: 'Marketing', label: 'Marketing' },
+  { value: 'Operations', label: 'Operations' },
+]
+
+function CareerSearch() {
+  const [role, setRole] = useState('')
+  const [department, setDepartment] = useState('any')
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const trimmedRole = role.trim()
+    const dept = department !== 'any' ? department : ''
+
+    const subjectParts = []
+    if (dept) subjectParts.push(dept)
+    if (trimmedRole) subjectParts.push(`(${trimmedRole})`)
+    const subject = subjectParts.join(' ')
+
+    const message = subject
+      ? `Hi Essixx team — I'm interested in a ${subject} role at Essixx.\n\nA short bit about me:\n`
+      : `Hi Essixx team — I'd love to explore career opportunities with you.\n\nA short bit about me:\n`
+
+    window.dispatchEvent(
+      new CustomEvent('essixx:career-search', {
+        detail: { role: trimmedRole, department: dept, message },
+      }),
+    )
+
+    const el = document.getElementById('contact')
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  return (
+    <form
+      className="career-search"
+      role="search"
+      aria-label="Search jobs at Essixx"
+      onSubmit={handleSubmit}
+    >
+      <div className="career-search-field career-search-field--role">
+        <span className="career-search-icon" aria-hidden="true">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-3.5-3.5" />
+          </svg>
+        </span>
+        <input
+          type="text"
+          className="career-search-input"
+          placeholder="Search by role (e.g. Designer, Engineer)"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          aria-label="Search by role"
+          autoComplete="off"
+        />
+      </div>
+
+      <span className="career-search-divider" aria-hidden="true" />
+
+      <div className="career-search-field career-search-field--dept">
+        <span className="career-search-icon" aria-hidden="true">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="7" width="18" height="13" rx="2" />
+            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+          </svg>
+        </span>
+        <select
+          className="career-search-select"
+          value={department}
+          onChange={(e) => setDepartment(e.target.value)}
+          aria-label="Filter by department"
+        >
+          {CAREER_DEPARTMENTS.map((d) => (
+            <option key={d.value} value={d.value}>
+              {d.label}
+            </option>
+          ))}
+        </select>
+        <span className="career-search-caret" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 6l4 4 4-4" />
+          </svg>
+        </span>
+      </div>
+
+      <button type="submit" className="career-search-btn">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="M20 20l-3.5-3.5" />
+        </svg>
+        <span>Search jobs</span>
+      </button>
+    </form>
+  )
+}
+
+const GENDER_OPTIONS = ['Male', 'Female', 'Other']
+
+const APPLIED_FOR_OPTIONS = [
+  'Frontend Developer',
+  'Backend Developer',
+  'Full-Stack Engineer',
+  'UI/UX Designer',
+  'Data/AI Engineer',
+  'Project/Product Manager',
+  'Other',
+]
+
+function CareerForm() {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    gender: '',
+    homeAddress: '',
+    appliedFor: '',
+  })
+  const [errors, setErrors] = useState({})
+  const [status, setStatus] = useState('idle')
+
+  const updateField = (name, value) => {
+    setForm((prev) => ({ ...prev, [name]: value }))
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }))
+    }
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    updateField(name, value)
+  }
+
+  const validate = () => {
+    const next = {}
+    if (!form.name.trim()) next.name = 'Please enter your full name.'
+    if (!form.email.trim()) {
+      next.email = 'Please enter your email address.'
+    } else {
+      const value = form.email.trim()
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+      if (!isEmail) {
+        next.email = 'Please enter a valid email address.'
+      }
+    }
+    if (!form.gender) next.gender = 'Please select an option.'
+    if (!form.homeAddress.trim()) {
+      next.homeAddress = 'Please enter your home address.'
+    }
+    if (!form.appliedFor.trim()) {
+      next.appliedFor = 'Please tell us which role you\u2019re applying for.'
+    }
+    return next
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const v = validate()
+    setErrors(v)
+    if (Object.keys(v).length) return
+    setStatus('sending')
+    setTimeout(() => {
+      setStatus('success')
+      setForm({
+        name: '',
+        email: '',
+        gender: '',
+        homeAddress: '',
+        appliedFor: '',
+      })
+    }, 800)
+  }
+
+  return (
+    <form className="career-form" onSubmit={handleSubmit} noValidate>
+      <div className="career-form-head">
+        <span className="pill">Apply now</span>
+        <h3 className="career-form-title">Career Application Form</h3>
+        <p className="career-form-sub">
+          Tell us a bit about yourself and which role you're interested in.
+          Required fields are marked with an asterisk.
+        </p>
+      </div>
+
+      <div className="career-form-grid">
+        <div className="career-form-field">
+          <label htmlFor="career-form-name" className="career-form-label">
+            Full Name *
+          </label>
+          <input
+            id="career-form-name"
+            name="name"
+            type="text"
+            className={`career-form-input ${errors.name ? 'has-error' : ''}`}
+            placeholder="Your full name"
+            value={form.name}
+            onChange={handleChange}
+            autoComplete="name"
+          />
+          {errors.name && (
+            <span className="career-form-error">{errors.name}</span>
+          )}
+        </div>
+
+        <div className="career-form-field">
+          <label htmlFor="career-form-email" className="career-form-label">
+            Email Address *
+          </label>
+          <input
+            id="career-form-email"
+            name="email"
+            type="email"
+            className={`career-form-input ${errors.email ? 'has-error' : ''}`}
+            placeholder="you@example.com"
+            value={form.email}
+            onChange={handleChange}
+            autoComplete="email"
+          />
+          {errors.email && (
+            <span className="career-form-error">{errors.email}</span>
+          )}
+        </div>
+
+        <div className="career-form-field career-form-field--full">
+          <span className="career-form-label">Gender *</span>
+          <div
+            role="radiogroup"
+            aria-label="Gender"
+            className={`career-form-radios ${errors.gender ? 'has-error' : ''}`}
+          >
+            {GENDER_OPTIONS.map((g) => {
+              const checked = form.gender === g
+              return (
+                <label
+                  key={g}
+                  className={`career-form-radio ${checked ? 'is-checked' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="gender"
+                    value={g}
+                    checked={checked}
+                    onChange={handleChange}
+                  />
+                  <span className="career-form-radio-dot" aria-hidden="true" />
+                  <span>{g}</span>
+                </label>
+              )
+            })}
+          </div>
+          {errors.gender && (
+            <span className="career-form-error">{errors.gender}</span>
+          )}
+        </div>
+
+        <div className="career-form-field career-form-field--full">
+          <label htmlFor="career-form-home-address" className="career-form-label">
+            Home Address *
+          </label>
+          <textarea
+            id="career-form-home-address"
+            name="homeAddress"
+            rows={3}
+            className={`career-form-input career-form-textarea ${errors.homeAddress ? 'has-error' : ''}`}
+            placeholder="House no., street, city, state, country"
+            value={form.homeAddress}
+            onChange={handleChange}
+            autoComplete="street-address"
+          />
+          {errors.homeAddress && (
+            <span className="career-form-error">{errors.homeAddress}</span>
+          )}
+        </div>
+
+        <div className="career-form-field career-form-field--full">
+          <label htmlFor="career-form-applied" className="career-form-label">
+            Applied For *
+          </label>
+          <select
+            id="career-form-applied"
+            name="appliedFor"
+            value={form.appliedFor}
+            onChange={handleChange}
+            className={`career-form-input ${errors.appliedFor ? 'has-error' : ''}`}
+          >
+            <option value="" disabled>
+              Select a job position
+            </option>
+            {APPLIED_FOR_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+          {errors.appliedFor && (
+            <span className="career-form-error">{errors.appliedFor}</span>
+          )}
+        </div>
+      </div>
+
+      <div className="career-form-actions">
+        <button
+          type="submit"
+          className="btn btn-primary career-form-submit"
+          disabled={status === 'sending'}
+        >
+          {status === 'sending' ? 'Submitting…' : 'Submit application'}
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3 8h10M9 4l4 4-4 4" />
+          </svg>
+        </button>
+        {status === 'success' && (
+          <span className="career-form-success" role="status">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 8.5l3 3 7-7" />
+            </svg>
+            Application received — we'll be in touch soon.
+          </span>
+        )}
+      </div>
+    </form>
+  )
+}
+
 function Career({ theme = 'dark' }) {
   const isLight = theme === 'light'
   const poster1 = isLight ? '/career-poster-1.png' : '/career-poster-1-dark.png'
@@ -1095,6 +1470,8 @@ function Career({ theme = 'dark' }) {
             about craft, customers, and learning fast — you'll feel at home here.
           </p>
         </div>
+
+        <CareerSearch />
 
         <div className="career-perks">
           {PERKS.map((p) => (
@@ -1186,258 +1563,10 @@ function Career({ theme = 'dark' }) {
             </svg>
           </a>
         </div>
+
         <CareerForm />
       </div>
     </section>
-  )
-}
-
-const GENDER_OPTIONS = ['Male', 'Female', 'Other']
-
-const APPLIED_FOR_OPTIONS = [
-  'Frontend Developer',
-  'Backend Developer',
-  'Full-Stack Engineer',
-  'UI/UX Designer',
-  'Data/AI Engineer',
-  'Project/Product Manager',
-  'Other',
-]
-
-function CareerForm() {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    gender: '',
-    homeAddress: '',
-    appliedFor: '',
-  })
-  const [errors, setErrors] = useState({})
-  const [status, setStatus] = useState('idle')
-
-  const updateField = (name, value) => {
-    setForm((prev) => ({ ...prev, [name]: value }))
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }))
-    }
-  }
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    updateField(name, value)
-  }
-
-  const validate = () => {
-    const next = {}
-    if (!form.name.trim()) next.name = 'Please enter your full name.'
-
-    if (!form.email.trim()) {
-      next.email = 'Please enter your email address.'
-    } else {
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())
-      if (!isEmail) next.email = 'Please enter a valid email address.'
-    }
-
-    if (!form.gender) next.gender = 'Please select an option.'
-
-    if (!form.homeAddress.trim()) {
-      next.homeAddress = 'Please enter your home address.'
-    }
-
-    if (!form.appliedFor.trim()) {
-      next.appliedFor = 'Please tell us which role you\u2019re applying for.'
-    }
-
-    return next
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const v = validate()
-    setErrors(v)
-    if (Object.keys(v).length) return
-
-    setStatus('sending')
-    setTimeout(() => {
-      setStatus('success')
-      setForm({
-        name: '',
-        email: '',
-        gender: '',
-        homeAddress: '',
-        appliedFor: '',
-      })
-    }, 800)
-  }
-
-  return (
-    <form className="career-form" onSubmit={handleSubmit} noValidate>
-      <div className="career-form-head">
-        <span className="pill">Apply now</span>
-        <h3 className="career-form-title">Career Application Form</h3>
-        <p className="career-form-sub">
-          Tell us a bit about yourself and which role you're interested in.
-          Required fields are marked with an asterisk.
-        </p>
-      </div>
-
-      <div className="career-form-grid">
-        <div className="career-form-field">
-          <label htmlFor="career-form-name" className="career-form-label">
-            Full Name *
-          </label>
-          <input
-            id="career-form-name"
-            name="name"
-            type="text"
-            className={`career-form-input ${errors.name ? 'has-error' : ''}`}
-            placeholder="Your full name"
-            value={form.name}
-            onChange={handleChange}
-            autoComplete="name"
-          />
-          {errors.name && <span className="career-form-error">{errors.name}</span>}
-        </div>
-
-        <div className="career-form-field">
-          <label htmlFor="career-form-email" className="career-form-label">
-            Email Address *
-          </label>
-          <input
-            id="career-form-email"
-            name="email"
-            type="email"
-            className={`career-form-input ${errors.email ? 'has-error' : ''}`}
-            placeholder="you@example.com"
-            value={form.email}
-            onChange={handleChange}
-            autoComplete="email"
-          />
-          {errors.email && <span className="career-form-error">{errors.email}</span>}
-        </div>
-
-        <div className="career-form-field career-form-field--full">
-          <span className="career-form-label">Gender *</span>
-          <div
-            role="radiogroup"
-            aria-label="Gender"
-            className={`career-form-radios ${errors.gender ? 'has-error' : ''}`}
-          >
-            {GENDER_OPTIONS.map((g) => {
-              const checked = form.gender === g
-              return (
-                <label
-                  key={g}
-                  className={`career-form-radio ${checked ? 'is-checked' : ''}`}
-                >
-                  <input
-                    type="radio"
-                    name="gender"
-                    value={g}
-                    checked={checked}
-                    onChange={handleChange}
-                  />
-                  <span className="career-form-radio-dot" aria-hidden="true" />
-                  <span>{g}</span>
-                </label>
-              )
-            })}
-          </div>
-          {errors.gender && (
-            <span className="career-form-error">{errors.gender}</span>
-          )}
-        </div>
-
-        <div className="career-form-field career-form-field--full">
-          <label
-            htmlFor="career-form-home-address"
-            className="career-form-label"
-          >
-            Home Address *
-          </label>
-          <textarea
-            id="career-form-home-address"
-            name="homeAddress"
-            rows={3}
-            className={`career-form-input career-form-textarea ${errors.homeAddress ? 'has-error' : ''}`}
-            placeholder="House no., street, city, state, country"
-            value={form.homeAddress}
-            onChange={handleChange}
-            autoComplete="street-address"
-          />
-          {errors.homeAddress && (
-            <span className="career-form-error">{errors.homeAddress}</span>
-          )}
-        </div>
-
-        <div className="career-form-field career-form-field--full">
-          <label htmlFor="career-form-applied" className="career-form-label">
-            Applied For *
-          </label>
-          <select
-            id="career-form-applied"
-            name="appliedFor"
-            value={form.appliedFor}
-            onChange={handleChange}
-            className={`career-form-input ${errors.appliedFor ? 'has-error' : ''}`}
-          >
-            <option value="" disabled>
-              Select a job position
-            </option>
-            {APPLIED_FOR_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-          {errors.appliedFor && (
-            <span className="career-form-error">{errors.appliedFor}</span>
-          )}
-        </div>
-      </div>
-
-      <div className="career-form-actions">
-        <button
-          type="submit"
-          className="btn btn-primary career-form-submit"
-          disabled={status === 'sending'}
-        >
-          {status === 'sending' ? 'Submitting…' : 'Submit application'}
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M3 8h10M9 4l4 4-4 4" />
-          </svg>
-        </button>
-
-        {status === 'success' && (
-          <span className="career-form-success" role="status">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M3 8.5l3 3 7-7" />
-            </svg>
-            Application received — we'll be in touch soon.
-          </span>
-        )}
-      </div>
-    </form>
   )
 }
 
@@ -1445,6 +1574,29 @@ function Contact() {
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle')
+
+  useEffect(() => {
+    const handler = (e) => {
+      const message = e?.detail?.message
+      if (!message) return
+      setForm((prev) => ({ ...prev, message }))
+      setErrors((prev) => ({ ...prev, message: undefined }))
+      requestAnimationFrame(() => {
+        const ta = document.getElementById('contact-message')
+        if (ta) {
+          ta.focus()
+          const len = ta.value.length
+          try {
+            ta.setSelectionRange(len, len)
+          } catch {
+            /* some browsers reject for empty inputs */
+          }
+        }
+      })
+    }
+    window.addEventListener('essixx:career-search', handler)
+    return () => window.removeEventListener('essixx:career-search', handler)
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
