@@ -29,12 +29,8 @@
   --btn-primary-text: #0b0e15;
   --btn-primary-hover: #e8f6ff;
 
-  /* hero atmosphere */
-  --hero-bg-1: #050a14;
-  --hero-bg-2: #02060d;
-  --hero-glow-1: rgba(0, 150, 200, 0.32);
-  --hero-glow-2: rgba(0, 80, 140, 0.16);
-  --stars-opacity: 0.5;
+  /* hero */
+  --hero-surface: #050a14;
 
   /* card highlight glow (work hover) */
   --card-glow: rgba(0, 212, 255, 0.45);
@@ -67,11 +63,7 @@
   --btn-primary-text: #ffffff;
   --btn-primary-hover: #1a2030;
 
-  --hero-bg-1: #eaf4fb;
-  --hero-bg-2: #ffffff;
-  --hero-glow-1: rgba(0, 145, 191, 0.18);
-  --hero-glow-2: rgba(0, 80, 140, 0.06);
-  --stars-opacity: 0;
+  --hero-surface: #ffffff;
 
   --card-glow: rgba(0, 145, 191, 0.3);
 
@@ -79,15 +71,17 @@
 }
 
 :root {
-  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-family: var(--sans);
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+    system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.55;
+  line-height: 1.47059;
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
 }
 
 * {
@@ -108,6 +102,28 @@ body {
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 10000;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--text-h);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 16px;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 section[id] {
@@ -153,8 +169,9 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.022em;
 }
 
 p {
