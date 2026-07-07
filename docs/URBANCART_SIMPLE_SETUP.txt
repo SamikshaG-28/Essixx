@@ -1,0 +1,109 @@
+UrbanCart changes — simple Essixx payment (no PHP on Essixx, no new Firebase plan)
+==================================================================================
+
+Essixx is already on the SAME Firebase project: urbancart-cc45c (shared Firestore).
+
+Essixx site only:
+  - Reads order from Firestore
+  - Opens Cashfree using paymentSessionId on the order
+  - Updates status (paid / payment_failed) in Firestore
+  - Redirects back to UrbanCart
+
+UrbanCart must create the Cashfree session (needs Cashfree secret on UrbanCart side only).
+
+
+WHAT URBANCART MUST ALWAYS DO
+-----------------------------
+
+1) Create order in Firestore: orders/{orderId}
+
+   sourceSite: "urbancart"
+   paymentMethod: "cashfree"
+   status: "payment_processing"
+   amount: <number>
+   currency: "INR"
+   userName, userEmail
+   items: [...]
+   address: { name, addressLine, city, stateName, pincode, phone }
+   returnUrlSuccess: "https://urbancart.fun/#/payment-success?order=" + orderId
+   returnUrlFailure: "https://urbancart.fun/#/payment-failed?order=" + orderId
+
+2) Call Cashfree API (server-side on UrbanCart — secret stays on UrbanCart only)
+
+   POST https://api.cashfree.com/pg/orders
+   Headers: x-client-id, x-client-secret, x-api-version: 2023-08-01
+
+   Body example:
+   {
+     "order_id": "UC-" + orderId,
+     "order_amount": amount,
+     "order_currency": "INR",
+     "customer_details": {
+       "customer_id": email,
+       "customer_name": userName,
+       "customer_email": userEmail,
+       "customer_phone": "10digitphone"
+     },
+     "order_meta": {
+       "return_url": "https://essixx.com/payment/return?orderId=" + orderId
+     }
+   }
+
+   Save response on the same Firestore order:
+   paymentSessionId: <from response payment_session_id>
+   cashfreeOrderId: "UC-" + orderId
+   cashfreeEnv: "production"
+
+3) Redirect customer to Essixx (only orderId needed)
+
+   window.location.href = "https://essixx.com/checkout?orderId=" + orderId
+
+   Or: https://essixx.com/#/checkout?orderId=ORDER_ID
+
+4) UrbanCart return pages
+
+   /#/payment-success?order=ORDER_ID  → show success if status === "paid"
+   /#/payment-failed?order=ORDER_ID   → retry payment
+
+
+WHAT URBANCART NEVER DOES
+-------------------------
+
+- No redirect with amount/email/name/phone required anymore (optional; Essixx reads Firestore)
+- No Cashfree checkout UI on urbancart.fun
+- No service account JSON on UrbanCart for Essixx
+- No PHP on Essixx
+
+
+FIRESTORE RULES (Firebase console — free Spark plan OK)
+-------------------------------------------------------
+
+Allow Essixx checkout page to update payment fields on orders:
+
+  match /orders/{orderId} {
+    allow read: if true;
+    allow update: if request.resource.data.diff(resource.data).affectedKeys()
+      .hasOnly(['status','cashfreePaymentStatus','cashfreePaymentId','cashfreeOrderId','paymentFailureReason','paidAt','updatedAt']);
+  }
+
+Tighten later with auth if needed.
+
+
+WHERE URBANCART PUTS CASHFREE SECRET
+------------------------------------
+
+Any ONE place you already have (pick one):
+  - Existing UrbanCart backend / API route
+  - Cloudflare Worker (free tier)
+  - Small Node script on UrbanCart hosting
+
+Essixx does NOT need Cashfree secret in build or .env.
+
+
+TEST
+----
+
+1. UrbanCart creates order + paymentSessionId in Firestore
+2. Open https://essixx.com/checkout?orderId=TEST_ID
+3. Cashfree opens automatically
+4. Pay → returns to essixx.com/payment/return?orderId=... → Firestore status paid → UrbanCart success page

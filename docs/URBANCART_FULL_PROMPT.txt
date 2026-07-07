@@ -1,0 +1,379 @@
+================================================================================
+URBANCART → ESSIXX PAYMENT — FULL IMPLEMENTATION PROMPT (copy-paste entire file)
+================================================================================
+
+Use this prompt in the UrbanCart codebase / with your AI agent to implement
+partner checkout. Essixx hosts Cashfree (whitelisted domain). UrbanCart and
+Essixx share ONE Firebase project and ONE Firestore collection.
+
+
+--------------------------------------------------------------------------------
+OVERVIEW
+--------------------------------------------------------------------------------
+
+Store:        https://urbancart.fun  OR  https://urbancarts.in  (same Firestore)
+Payment host: https://essixx.com     (Essixx — Cashfree UI runs here only)
+
+Essixx auto-detects .fun vs .in from order returnUrlSuccess/returnUrlFailure (no change
+required on UrbanCart if those URLs already use the correct domain). Optional: set
+returnUrlSuccess/returnUrlFailure per site when creating the order.
+Firebase:     project urbancart-cc45c, collection orders (SHARED)
+
+NO PHP on Essixx.
+NO Firebase Cloud Functions on Essixx.
+NO VPS / no new paid Firebase plan.
+NO Cashfree secret keys on Essixx frontend.
+
+UrbanCart MUST call Cashfree Create Order API once (server-side on UrbanCart)
+and save paymentSessionId on the Firestore order BEFORE redirecting to Essixx.
+
+Essixx ONLY:
+  - Reads order from Firestore by orderId
+  - Opens Cashfree checkout with order.paymentSessionId
+  - After payment, updates Firestore status (paid / payment_failed)
+  - Redirects user back to UrbanCart success/failure URLs
+
+
+--------------------------------------------------------------------------------
+ESSIXX (already built — UrbanCart team does NOT change Essixx code)
+--------------------------------------------------------------------------------
+
+Firebase config (Essixx src/lib/firebase.js):
+  projectId: urbancart-cc45c
+
+Checkout URL (only parameter required):
+  https://essixx.com/checkout?orderId={ORDER_ID}
+  or
+  https://essixx.com/#/checkout?orderId={ORDER_ID}
+
+Payment return URL (set in Cashfree order_meta.return_url):
+  https://essixx.com/payment/return?orderId={ORDER_ID}
+
+Essixx deploy: npm run build → upload dist/ to Hostinger (static site only).
+
+
+--------------------------------------------------------------------------------
+URBANCART — ALWAYS DO THIS ON EVERY CHECKOUT
+--------------------------------------------------------------------------------
+
+STEP 1 — Create / update Firestore document orders/{orderId}
+----------------------------------------------------------
+
+Required fields:
+
+  sourceSite:         "urbancart"
+  paymentMethod:      "cashfree"
+  status:             "payment_processing"   (or "awaiting_payment")
+                        NEVER "paid" before Essixx confirms payment
+  amount:             number                 (e.g. 29)
+  currency:           "INR"
+  userName:           string
+  userEmail:          string
+  items:              array                  [{ name, quantity, productId? }]
+  address:            map                    { name, addressLine, city, stateName, pincode, phone }
+  returnUrlSuccess:   "https://urbancart.fun/#/payment-success?order=" + orderId
+  returnUrlFailure:   "https://urbancart.fun/#/payment-failed?order=" + orderId
+
+Optional but recommended:
+
+  createdAt, updatedAt, cart metadata you already store
+
+
+STEP 2 — Create Cashfree payment session (UrbanCart server-side ONLY)
+---------------------------------------------------------------------
+
+Cashfree secret (x-client-secret) and app id (x-client-id) stay on UrbanCart
+only. Never put them in Essixx React build or urbancart.fun frontend.
+
+API:
+
+  POST https://api.cashfree.com/pg/orders
+  (sandbox: https://sandbox.cashfree.com/pg/orders)
+
+Headers:
+  Content-Type: application/json
+  x-api-version: 2023-08-01
+  x-client-id: <YOUR_CASHFREE_APP_ID>
+  x-client-secret: <YOUR_CASHFREE_SECRET>
+
+Request body example:
+
+  {
+    "order_id": "UC-{orderId}",
+    "order_amount": 29,
+    "order_currency": "INR",
+    "customer_details": {
+      "customer_id": "customer@email.com",
+      "customer_name": "Full Name",
+      "customer_email": "customer@email.com",
+      "customer_phone": "8552965569"
+    },
+    "order_meta": {
+      "return_url": "https://essixx.com/payment/return?orderId={orderId}"
+    },
+    "order_note": "UrbanCart order {orderId}"
+  }
+
+customer_phone: 10-digit Indian mobile (digits only preferred).
+
+Response: save these fields on the SAME Firestore order document:
+
+  paymentSessionId:  response.payment_session_id
+  cashfreeOrderId:   "UC-" + orderId
+  cashfreeEnv:       "production"    (or "sandbox" for testing)
+
+Wait until Firestore write completes before redirect.
+
+
+STEP 3 — Redirect customer to Essixx
+------------------------------------
+
+Only orderId is required in the URL:
+
+  window.location.href = "https://essixx.com/checkout?orderId=" + orderId;
+
+Use encodeURIComponent(orderId) if needed.
+
+Do NOT open Cashfree checkout on urbancart.fun domain.
+
+
+STEP 4 — UrbanCart return pages (REQUIRED)
+------------------------------------------
+
+Route: /#/payment-success?order={orderId}
+
+  - Load orders/{orderId} from Firestore (urbancart-cc45c)
+  - Show success UI ONLY if status === "paid"
+  - Clear cart / show order confirmation
+  - Use onSnapshot or short poll if user lands before Essixx updates status
+
+Route: /#/payment-failed?order={orderId}
+
+  - Load orders/{orderId}
+  - Show failure if status === "payment_failed"
+  - "Try again": reset status to payment_processing, recreate Cashfree session
+    (step 2), save new paymentSessionId, redirect to Essixx checkout again
+
+
+--------------------------------------------------------------------------------
+URBANCART — NEVER DO THIS
+--------------------------------------------------------------------------------
+
+  - Do NOT host Cashfree Payment Gateway UI on urbancart.fun (domain not whitelisted)
+  - Do NOT put Cashfree client secret in frontend / VITE_ env on UrbanCart SPA
+  - Do NOT set order status to "paid" before user returns from Essixx
+  - Do NOT require Essixx PHP or Firebase service account on Essixx
+  - Do NOT skip paymentSessionId on the order before redirect
+  - Do NOT use a different Firebase project for orders unless both apps are updated
+
+
+--------------------------------------------------------------------------------
+FIRESTORE ORDER — FULL FIELD REFERENCE
+--------------------------------------------------------------------------------
+
+| Field               | Type   | Set by      | Notes |
+|---------------------|--------|-------------|-------|
+| sourceSite          | string | UrbanCart   | "urbancart" |
+| paymentMethod       | string | UrbanCart   | "cashfree" |
+| status              | string | Both        | UrbanCart: payment_processing → Essixx: paid / payment_failed |
+| amount              | number | UrbanCart   | INR total |
+| currency            | string | UrbanCart   | "INR" |
+| userName            | string | UrbanCart   | |
+| userEmail           | string | UrbanCart   | |
+| items               | array  | UrbanCart   | |
+| address             | map    | UrbanCart   | includes phone |
+| returnUrlSuccess    | string | UrbanCart   | urbancart.fun success hash route |
+| returnUrlFailure    | string | UrbanCart   | urbancart.fun failure hash route |
+| paymentSessionId    | string | UrbanCart   | From Cashfree create order API — REQUIRED |
+| cashfreeOrderId     | string | UrbanCart   | Usually "UC-" + orderId |
+| cashfreeEnv         | string | UrbanCart   | "production" or "sandbox" |
+| cashfreePaymentId   | string | Essixx      | After successful pay |
+| cashfreePaymentStatus | string | Essixx    | "SUCCESS" / "FAILED" |
+| paymentFailureReason | string | Essixx     | On failure |
+| paidAt              | timestamp | Essixx   | On success |
+| updatedAt           | timestamp | Essixx   | On status change |
+
+
+--------------------------------------------------------------------------------
+FIRESTORE SECURITY RULES (Firebase Console — free Spark plan OK)
+--------------------------------------------------------------------------------
+
+Project: urbancart-cc45c → Firestore → Rules
+
+Allow read on orders for checkout. Allow Essixx to update payment fields only:
+
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /orders/{orderId} {
+        allow read: if true;
+        allow create: if true;
+        allow update: if request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly([
+            'status',
+            'cashfreePaymentStatus',
+            'cashfreePaymentId',
+            'cashfreeOrderId',
+            'paymentFailureReason',
+            'paidAt',
+            'updatedAt'
+          ]);
+      }
+    }
+  }
+
+Tighten with auth / sourceSite checks in production when ready.
+
+
+--------------------------------------------------------------------------------
+WHERE TO PUT CASHFREE SECRET ON URBANCART (pick one)
+--------------------------------------------------------------------------------
+
+  - Existing UrbanCart backend API route
+  - Cloudflare Worker (free tier)
+  - Small Node/Express on UrbanCart hosting
+  - Firebase Callable / HTTP function on UrbanCart project (if you already use Blaze)
+
+Essixx does NOT need the secret.
+
+
+--------------------------------------------------------------------------------
+EXAMPLE: URBANCART REDIRECT HELPER (JavaScript)
+--------------------------------------------------------------------------------
+
+async function payOnEssixx(orderId, orderPayload, cashfreeCredentials) {
+  const orderRef = doc(db, 'orders', orderId)
+
+  // 1) Save order
+  await setDoc(orderRef, {
+    ...orderPayload,
+    sourceSite: 'urbancart',
+    paymentMethod: 'cashfree',
+    status: 'payment_processing',
+    returnUrlSuccess: `https://urbancart.fun/#/payment-success?order=${orderId}`,
+    returnUrlFailure: `https://urbancart.fun/#/payment-failed?order=${orderId}`,
+  }, { merge: true })
+
+  // 2) Create Cashfree session — call YOUR server, not browser with secret
+  const session = await fetch('https://urbancart.fun/api/cashfree/create-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderId, ...orderPayload }),
+  }).then((r) => r.json())
+
+  // 3) Save session on order
+  await updateDoc(orderRef, {
+    paymentSessionId: session.payment_session_id,
+    cashfreeOrderId: `UC-${orderId}`,
+    cashfreeEnv: 'production',
+  })
+
+  // 4) Redirect to Essixx
+  window.location.href = `https://essixx.com/checkout?orderId=${encodeURIComponent(orderId)}`
+}
+
+
+--------------------------------------------------------------------------------
+EXAMPLE: URBANCART SERVER — CREATE CASHFREE ORDER (Node.js)
+--------------------------------------------------------------------------------
+
+// UrbanCart backend only — NOT on Essixx
+
+app.post('/api/cashfree/create-order', async (req, res) => {
+  const { orderId, amount, userEmail, userName, phone } = req.body
+
+  const response = await fetch('https://api.cashfree.com/pg/orders', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-version': '2023-08-01',
+      'x-client-id': process.env.CASHFREE_CLIENT_ID,
+      'x-client-secret': process.env.CASHFREE_CLIENT_SECRET,
+    },
+    body: JSON.stringify({
+      order_id: `UC-${orderId}`,
+      order_amount: Number(amount),
+      order_currency: 'INR',
+      customer_details: {
+        customer_id: String(userEmail).slice(0, 80),
+        customer_name: userName,
+        customer_email: userEmail,
+        customer_phone: String(phone).replace(/\D/g, '').slice(-10),
+      },
+      order_meta: {
+        return_url: `https://essixx.com/payment/return?orderId=${encodeURIComponent(orderId)}`,
+      },
+    }),
+  })
+
+  const data = await response.json()
+  if (!response.ok) return res.status(500).json({ error: data.message })
+
+  res.json({
+    payment_session_id: data.payment_session_id,
+    cashfree_order_id: data.order_id,
+  })
+})
+
+
+--------------------------------------------------------------------------------
+END-TO-END FLOW
+--------------------------------------------------------------------------------
+
+  1. Customer checks out on UrbanCart
+  2. UrbanCart writes orders/{orderId} in Firestore
+  3. UrbanCart server calls Cashfree → gets paymentSessionId → saves on order
+  4. UrbanCart redirects to https://essixx.com/checkout?orderId=...
+  5. Essixx loads order, auto-opens Cashfree with paymentSessionId
+  6. Customer pays on Cashfree (essixx.com domain)
+  7. Cashfree redirects to https://essixx.com/payment/return?orderId=...&order_status=...
+  8. Essixx sets Firestore status paid or payment_failed
+  9. Essixx redirects to returnUrlSuccess or returnUrlFailure on urbancart.fun
+  10. UrbanCart success page reads status === "paid" and completes UX
+
+
+--------------------------------------------------------------------------------
+CASHFREE DASHBOARD (UrbanCart / merchant account)
+--------------------------------------------------------------------------------
+
+  Return URL (in API order_meta): https://essixx.com/payment/return?orderId=...
+  Webhook (optional, UrbanCart server): your UrbanCart endpoint if you add one
+  Domain whitelist: essixx.com for hosted checkout
+
+
+--------------------------------------------------------------------------------
+TEST CHECKLIST
+--------------------------------------------------------------------------------
+
+  [ ] UrbanCart creates order in Firestore with all required fields
+  [ ] paymentSessionId exists on order before redirect
+  [ ] Redirect URL works: essixx.com/checkout?orderId=TEST_ID
+  [ ] Cashfree payment screen opens on Essixx
+  [ ] After test payment, Firestore status becomes "paid"
+  [ ] User lands on urbancart.fun/#/payment-success?order=TEST_ID
+  [ ] Failed/cancel payment sets payment_failed and failure page works
+
+
+--------------------------------------------------------------------------------
+TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+"Missing paymentSessionId on order"
+  → UrbanCart did not run Cashfree create-order API or did not save session on Firestore
+
+"Order not found"
+  → Wrong orderId or wrong Firebase project (must be urbancart-cc45c)
+
+"Permission denied" on Firestore update from Essixx
+  → Update Firestore rules (see section above)
+
+Cashfree does not open on Essixx
+  → paymentSessionId invalid/expired; create new session and redirect again
+
+Essixx shows paid but UrbanCart does not
+  → UrbanCart success page must read same Firestore project and orderId
+
+
+================================================================================
+END OF PROMPT — implement all UrbanCart steps above; Essixx side is already done.
+================================================================================

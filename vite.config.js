@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
         changefreq: 'weekly',
         priority: 1,
         generateRobotsTxt: true,
-        dynamicRoutes: ['/launch', '/about'],
+        dynamicRoutes: ['/launch', '/about', '/careers'],
       }),
     ],
   }

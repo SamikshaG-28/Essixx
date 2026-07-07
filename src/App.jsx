@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage.jsx'
 import LaunchAppPage from './pages/LaunchAppPage.jsx'
 import AboutPage from './pages/AboutPage.jsx'
 import CareersPage from './pages/CareersPage.jsx'
+import CheckoutPage from './pages/CheckoutPage.jsx'
+import PaymentReturnPage from './pages/PaymentReturnPage.jsx'
 import {
   siteConfig,
   buildPageJsonLd,
@@ -136,6 +138,8 @@ function App() {
             </>
           }
         />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/payment/return" element={<PaymentReturnPage />} />
       </Routes>
     </HashRouter>
   )

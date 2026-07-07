@@ -1,0 +1,232 @@
+UrbanCart → Essixx checkout integration (copy-paste prompt)
+================================================================
+
+Integrate UrbanCart (https://urbancart.fun) with partner checkout on Essixx (https://essixx.com). UrbanCart cannot host Cashfree checkout (domain not whitelisted). Essixx hosts payment; both apps share the same Firebase project and Firestore collection `orders`.
+
+Do NOT add Cashfree SDK or secret keys on urbancart.fun. Do NOT change Firebase plan or add Cloud Functions on UrbanCart for this flow.
+
+
+1. Shared Firebase
+------------------
+
+- Project: urbancart-cc45c (same as today)
+- Collection: orders
+- UrbanCart already writes orders; keep using the existing Firestore client SDK.
+
+
+2. Firestore order document (REQUIRED before redirect)
+------------------------------------------------------
+
+When the user taps "Pay" / "Place order", create or update orders/{orderId} with at least:
+
+| Field              | Type   | Required value / notes |
+|--------------------|--------|----------------------|
+| sourceSite         | string | "urbancart" |
+| paymentMethod      | string | "cashfree" |
+| status             | string | One of: "payment_processing", "awaiting_payment", or "payment_failed" (not "paid" until Essixx confirms) |
+| amount             | number | Order total in INR (e.g. 29) — must match URL param exactly (2 decimal places when compared: 29.00) |
+| currency           | string | "INR" (optional but recommended) |
+| userName           | string | Customer full name |
+| userEmail          | string | Customer email |
+| items              | array  | [{ name, quantity, productId? }] for display on Essixx |
+| address            | map    | { name, addressLine, city, stateName, pincode, phone } — phone 10-digit Indian mobile |
+| returnUrlSuccess   | string | https://urbancart.fun/#/payment-success?order={orderId} |
+| returnUrlFailure   | string | https://urbancart.fun/#/payment-failed?order={orderId} |
+
+Optional but useful: createdAt, updatedAt, cart metadata you already store.
+
+Validation on Essixx (client + PHP): rejects if sourceSite !== "urbancart", paymentMethod !== "cashfree", amount mismatch, or status not payable.
+
+
+3. Redirect user to Essixx checkout
+-----------------------------------
+
+After the order doc exists in Firestore, redirect the browser (full navigation, window.location.href):
+
+Preferred URL (hash route + static bridge):
+
+  https://essixx.com/checkout?orderId={ORDER_ID}&amount={AMOUNT}&email={EMAIL}&name={NAME}&phone={PHONE}&source=urbancart
+
+Essixx redirects /checkout → /#/checkout with the same query string.
+
+Alternative (direct hash):
+
+  https://essixx.com/#/checkout?orderId={ORDER_ID}&amount={AMOUNT}&email={EMAIL}&name={NAME}&phone={PHONE}&source=urbancart
+
+Required query parameters:
+
+| Param   | Example        | Notes |
+|---------|----------------|-------|
+| orderId | Firestore doc id | Same as orders/{orderId} |
+| amount  | 29 or 29.00    | Must match orders/{orderId}.amount |
+| email   | encoded email  | |
+| name    | encoded name   | |
+| phone   | 8552965569     | 10 digits, no spaces preferred |
+| source  | urbancart      | Literal string |
+
+Optional query parameters:
+
+| Param          | Notes |
+|----------------|-------|
+| returnSuccess  | Override success redirect; default is returnUrlSuccess on the order doc |
+| returnFailure  | Override failure redirect; default is returnUrlFailure on the order doc |
+
+Use encodeURIComponent() for all query values.
+
+Do not open Cashfree on urbancart.fun. Do not require returnSuccess / returnFailure in the URL if they are already on the Firestore order.
+
+
+4. UrbanCart return routes (REQUIRED)
+-------------------------------------
+
+Add or confirm hash routes (app uses hash router):
+
+| Route                 | Purpose |
+|-----------------------|---------|
+| /#/payment-success    | Read ?order= from query; load orders/{orderId}; if status === "paid", show success UI and clear cart |
+| /#/payment-failed     | Read ?order=; show failure + retry CTA back to checkout |
+
+Example success URL (set on order + default on Essixx):
+
+  https://urbancart.fun/#/payment-success?order={orderId}
+
+Example failure URL:
+
+  https://urbancart.fun/#/payment-failed?order={orderId}
+
+On success page: getDoc(doc(db, "orders", orderId)) — only treat as success if status === "paid" (Essixx PHP/webhook sets this). Poll or listen with onSnapshot if user lands before webhook finishes.
+
+On failure page: handle status === "payment_failed"; offer "Try again" → recreate payable order or reset status to payment_processing and redirect to Essixx again.
+
+
+5. Payment flow (end-to-end)
+----------------------------
+
+1. UrbanCart: create orders/{orderId} with fields in section 2, status payment_processing or awaiting_payment.
+2. UrbanCart: redirect to Essixx checkout URL (section 3).
+3. Essixx: validates order, shows summary, user pays via Cashfree on essixx.com.
+4. Cashfree return: https://essixx.com/payment/return?orderId=... → Essixx verifies → redirects to returnUrlSuccess or returnUrlFailure.
+5. UrbanCart: success/failure pages read Firestore and update UI / cart.
+
+Firestore status values Essixx sets:
+
+- awaiting_payment — session created
+- paid — success (+ cashfreeOrderId, cashfreePaymentId, paidAt)
+- payment_failed — failed/cancelled (+ paymentFailureReason)
+
+
+6. Code changes checklist (UrbanCart)
+-------------------------------------
+
+[ ] Order creation sets sourceSite, paymentMethod, status, amount, customer fields, items, address, returnUrlSuccess, returnUrlFailure.
+[ ] Replace any on-site Cashfree checkout with redirect to Essixx URL builder (section 3).
+[ ] Implement /#/payment-success and /#/payment-failed with order query param.
+[ ] Success page confirms status === "paid" from Firestore before completing order.
+[ ] Remove dependency on Cashfree return URLs pointing to urbancart.fun domain for the PG UI (only redirect back after Essixx processing).
+
+
+7. Example redirect helper (JavaScript)
+---------------------------------------
+
+function redirectToEssixxCheckout(order) {
+  const orderId = order.id // Firestore document id
+  const params = new URLSearchParams({
+    orderId,
+    amount: String(order.amount),
+    email: order.userEmail,
+    name: order.userName,
+    phone: order.address?.phone || '',
+    source: 'urbancart',
+  })
+  window.location.href = `https://essixx.com/checkout?${params.toString()}`
+}
+
+Call only after setDoc / updateDoc on orders/{orderId} has completed successfully.
+
+
+8. Testing
+----------
+
+1. Create a test order on UrbanCart with amount ₹1–29.
+2. Confirm Firestore doc in Console (orders/{id}).
+3. Redirect to Essixx → summary loads → Pay opens Cashfree.
+4. Complete test payment → land on /#/payment-success?order=... → doc status is paid.
+
+
+9. Out of scope for UrbanCart
+-------------------------------
+
+- Essixx PHP API (essixx.com/api/cashfree/*.php), Cashfree keys, service account JSON — configured only on Essixx Hostinger.
+- Firebase Cloud Functions — not used; do not add for this flow.
+
+
+================================================================
+URBANCART — ALWAYS DO THIS (every order / every payment)
+================================================================
+
+UrbanCart does NOT need Firebase service account JSON or Cashfree secret keys.
+UrbanCart ALWAYS must do the following on every checkout — no exceptions:
+
+
+A) BEFORE redirecting to Essixx (Firestore write — ALWAYS)
+----------------------------------------------------------
+
+Write orders/{orderId} in project urbancart-cc45c with:
+
+  sourceSite: "urbancart"
+  paymentMethod: "cashfree"
+  status: "payment_processing" OR "awaiting_payment"  (never "paid" yet)
+  amount: <number, must match redirect URL>
+  userName, userEmail
+  items: [...]
+  address: { name, addressLine, city, stateName, pincode, phone }
+  returnUrlSuccess: "https://urbancart.fun/#/payment-success?order=" + orderId
+  returnUrlFailure: "https://urbancart.fun/#/payment-failed?order=" + orderId
+
+Wait for Firestore write to finish before redirect.
+
+
+B) REDIRECT (ALWAYS — never open Cashfree on urbancart.fun)
+-----------------------------------------------------------
+
+  window.location.href =
+    "https://essixx.com/checkout?orderId=" + orderId
+    + "&amount=" + amount
+    + "&email=" + encodeURIComponent(email)
+    + "&name=" + encodeURIComponent(name)
+    + "&phone=" + phone
+    + "&source=urbancart"
+
+Required: orderId, amount, email, name, phone, source=urbancart
+Optional: returnSuccess, returnFailure (only if not already on order doc)
+
+
+C) RETURN PAGES (ALWAYS implement)
+----------------------------------
+
+Route /#/payment-success?order=ORDER_ID
+  → Read orders/{ORDER_ID}
+  → Show success ONLY if status === "paid"
+  → Clear cart / show order confirmation
+
+Route /#/payment-failed?order=ORDER_ID
+  → Read orders/{ORDER_ID}
+  → Show failure if status === "payment_failed"
+  → Button: retry payment (new redirect to Essixx after resetting status)
+
+
+D) NEVER on UrbanCart
+---------------------
+
+  - Do NOT put Cashfree client secret or service account on urbancart.fun
+  - Do NOT set status to "paid" before user returns from Essixx
+  - Do NOT host Cashfree checkout UI on urbancart.fun domain
+  - Do NOT skip sourceSite / paymentMethod / amount match
+
+
+E) Essixx-only setup (UrbanCart team does NOT do this)
+------------------------------------------------------
+
+  - service-account.json on essixx.com/api/cashfree/
+  - api/cashfree/.env with Cashfree keys
+  See docs/FIREBASE_SERVICE_ACCOUNT_SETUP.txt on Essixx repo

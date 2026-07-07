@@ -1,0 +1,21 @@
+Essixx payment — simple mode (Firebase client only)
+=====================================================
+
+No PHP. No Firebase Cloud Functions. No VPS. No paid Firebase plan upgrade.
+
+Firebase on Essixx (already connected in src/lib/firebase.js):
+  Project: urbancart-cc45c
+  Collection: orders
+
+Flow:
+  1. UrbanCart writes order + paymentSessionId to Firestore
+  2. User opens https://essixx.com/checkout?orderId=XXX
+  3. Essixx reads order, opens Cashfree SDK
+  4. After pay, Cashfree returns to https://essixx.com/payment/return?orderId=XXX
+  5. Essixx updates Firestore status, redirects to urbancart.fun
+
+Deploy: npm run build → upload dist/ to Hostinger (static files only).
+
+You can delete or ignore public/api/cashfree/ PHP folder — not used anymore.
+
+UrbanCart instructions: docs/URBANCART_SIMPLE_SETUP.txt
