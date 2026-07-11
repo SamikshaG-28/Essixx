@@ -50,7 +50,15 @@ export default function ContactFooter() {
 
       <div className="sx-footer-scene" aria-hidden="true">
         <FooterRocksReveal className="sx-footer-scene-reveal">
-          <img src="/footer-rocks.png" alt="" draggable={false} />
+          <img
+            src="/footer-rocks.webp"
+            alt=""
+            width={1536}
+            height={435}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+          />
         </FooterRocksReveal>
       </div>
     </footer>

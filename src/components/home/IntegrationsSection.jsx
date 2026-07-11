@@ -169,6 +169,7 @@ function IntegrationBoard() {
               ...(tile.cardImage ? { backgroundImage: `url(${tile.cardImage})` } : null),
             }}
             aria-label={tile.name}
+            whileHover={{ scale: 1.07, zIndex: 3 }}
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={
               play
@@ -193,6 +194,10 @@ function IntegrationBoard() {
             }}
           >
             {!tile.cardImage && <IntegrationIcon name={tile.icon} size={32} />}
+            <span className="sx-int-tile-info" aria-hidden="true">
+              <strong>{tile.name}</strong>
+              <em>{tile.tag}</em>
+            </span>
           </motion.article>
         ))}
 
@@ -232,7 +237,17 @@ function IntegrationBoard() {
             }
             transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
           >
-            <img src="/essixx-logo.png" alt="" className="sx-int-hub-logo" aria-hidden="true" draggable={false} />
+            <img
+              src="/essixx-logo.png"
+              alt=""
+              width={40}
+              height={40}
+              loading="lazy"
+              decoding="async"
+              className="sx-int-hub-logo"
+              aria-hidden="true"
+              draggable={false}
+            />
             <div className="sx-int-hub-meta">
               <strong>Essixx Core</strong>
               <span className="sx-int-hub-status">

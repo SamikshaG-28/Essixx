@@ -1,22 +1,43 @@
-import { HashRouter, Routes, Route } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Seo from './components/Seo.jsx'
 import HomePage from './pages/HomePage.jsx'
-import LaunchAppPage from './pages/LaunchAppPage.jsx'
-import AboutPage from './pages/AboutPage.jsx'
-import CareersPage from './pages/CareersPage.jsx'
-import CheckoutPage from './pages/CheckoutPage.jsx'
-import PaymentReturnPage from './pages/PaymentReturnPage.jsx'
+import { FAQS } from './data/faqs.js'
+import { OPENINGS } from './data/openings.js'
 import {
   siteConfig,
   buildPageJsonLd,
   buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildJobPostingJsonLd,
+  buildMarketingOffersJsonLd,
   absoluteUrl,
 } from './seo/siteConfig.js'
 
+// Route-level code splitting: the homepage stays in the main bundle,
+// everything else (including Firebase on checkout pages) loads on demand.
+const LaunchAppPage = lazy(() => import('./pages/LaunchAppPage.jsx'))
+const AboutPage = lazy(() => import('./pages/AboutPage.jsx'))
+const CareersPage = lazy(() => import('./pages/CareersPage.jsx'))
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage.jsx'))
+const PaymentReturnPage = lazy(() => import('./pages/PaymentReturnPage.jsx'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'))
+
+// Legacy HashRouter URLs (e.g. /#/checkout?orderId=X from old UrbanCart links)
+// are rewritten to real path URLs before the router mounts.
+if (typeof window !== 'undefined' && window.location.hash.startsWith('#/')) {
+  const raw = window.location.hash.slice(1)
+  const [hashPath, hashQuery = ''] = raw.split('?')
+  const search = window.location.search.replace(/^\?/, '')
+  const combined = [search, hashQuery].filter(Boolean).join('&')
+  window.history.replaceState(null, '', hashPath + (combined ? `?${combined}` : ''))
+}
+
 function App() {
   return (
-    <HashRouter>
-      <Routes>
+    <BrowserRouter>
+      <Suspense fallback={null}>
+        <Routes>
         <Route
           path="/"
           element={
@@ -29,6 +50,8 @@ function App() {
                     title: siteConfig.title,
                     description: siteConfig.description,
                   }),
+                  buildFaqJsonLd(FAQS),
+                  buildMarketingOffersJsonLd(),
                 ]}
               />
               <a href="/?scroll=home" className="skip-link">
@@ -132,16 +155,19 @@ function App() {
                     { name: 'Home', path: '/' },
                     { name: 'Careers', path: '/careers' },
                   ]),
+                  ...OPENINGS.map((job) => buildJobPostingJsonLd(job)),
                 ]}
               />
               <CareersPage />
             </>
           }
         />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/payment/return" element={<PaymentReturnPage />} />
-      </Routes>
-    </HashRouter>
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/payment/return" element={<PaymentReturnPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
   )
 }
 

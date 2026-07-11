@@ -5,27 +5,27 @@ const TEAM = [
   {
     name: 'Kartik Sabale',
     role: 'CEO, Founder & Chief Architect',
-    image: '/team/kartik-sabale.png',
+    image: '/team/kartik-sabale.webp',
   },
   {
     name: 'Tejas Khairnar',
     role: 'Chief Technology Officer (CTO)',
-    image: '/team/tejas-khairnar.png',
+    image: '/team/tejas-khairnar.webp',
   },
   {
     name: 'Shilpa Shivamre',
     role: 'Chief Financial Officer (CFO)',
-    image: '/team/shilpa-shivamre.png',
+    image: '/team/shilpa-shivamre.webp',
   },
   {
     name: 'Ashish Shivmare',
     role: 'Head of Client Relations',
-    image: '/team/ashish-shivmare.png',
+    image: '/team/ashish-shivmare.webp',
   },
   {
     name: 'Pratiksha Relekar',
     role: 'Head of Design',
-    image: '/team/pratiksha-relekar.png',
+    image: '/team/pratiksha-relekar.webp',
   },
 ]
 
@@ -61,7 +61,15 @@ export default function OurTeamSection({ showReadMore = true }) {
           {TEAM.map((member, i) => (
             <Reveal key={member.name} delay={0.06 + i * 0.08} className="sx-team-card">
               <div className="sx-team-photo">
-                <img src={member.image} alt={member.name} loading="lazy" draggable={false} />
+                <img
+                  src={member.image}
+                  alt={`${member.name} — ${member.role} at Essixx`}
+                  width={768}
+                  height={1024}
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                />
               </div>
               <h3>{member.name}</h3>
               <p>{member.role}</p>

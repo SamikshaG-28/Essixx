@@ -1,0 +1,72 @@
+Essixx SEO — deploy & handoff checklist
+========================================
+
+WHAT IS ALREADY DONE IN CODE
+----------------------------
+- Real URLs (BrowserRouter): /about, /careers, /launch — no more /#/ hash URLs.
+  Old /#/ links still work (auto-redirect to the path URL).
+- public/.htaccess: https + www 301 redirect, SPA fallback, caching, compression.
+- Prerendered HTML for Google: run `npm run build:seo` (build + prerender).
+  Crawlers get full content without JavaScript.
+- Sitemap (dist/sitemap.xml) + robots.txt with /checkout and /payment/ disallowed.
+- Structured data: Organization, LocalBusiness (with opening hours), WebSite,
+  FAQPage (homepage FAQ section), JobPosting (careers), Digital Marketing
+  plans as Service offers with INR prices, BreadcrumbList per page.
+- OG image: /og-image.png (1200x630) for social shares.
+- Performance: route code splitting (homepage JS about 40% smaller, Firebase
+  loads only when needed), WebP images (about 5.3 MB -> 1.1 MB), image
+  width/height attributes, lazy loading, preloaded hero images.
+- 404 page with noindex.
+
+HOW TO DEPLOY
+-------------
+1. npm run build:seo        (NOT plain `npm run build` — this also prerenders)
+2. Upload the entire dist/ folder to Hostinger public_html
+   (make sure hidden .htaccess is included).
+3. Visit https://www.essixx.com/about directly — it must load without a 404.
+
+MANUAL STEPS (DO THESE ONCE)
+----------------------------
+1. Google Search Console (search.google.com/search-console)
+   - Add property "Domain" type: essixx.com (needs one DNS TXT record on
+     Hostinger) — covers www and non-www.
+   - Submit sitemap: https://www.essixx.com/sitemap.xml
+   - Use URL Inspection on /, /about, /careers → Request indexing.
+
+2. Google Business Profile (business.google.com)
+   - Create/claim "Essixx" with the Pune (Navale Bridge) address.
+   - Add website link, services, photos, hours (Mon–Sat 10:00–19:00 is what
+     the site's structured data says — keep them matching).
+   - Collect Google reviews — biggest local-SEO ranking factor.
+
+3. Fix placeholder data in src/seo/siteConfig.js:
+   - phone: "+919000000000" is a PLACEHOLDER — replace with the real number.
+   - social: LinkedIn/Twitter/Instagram/Facebook URLs — replace with real
+     profiles or remove dead ones (Google checks sameAs links).
+   - foundingDate, address pincode — verify.
+
+4. Bing Webmaster Tools (bing.com/webmasters) — import from Search Console,
+   one click, covers Bing + DuckDuckGo + Yahoo.
+
+5. Verify rich results after deploy:
+   - https://search.google.com/test/rich-results  → test /, /careers
+   - https://validator.schema.org
+   - https://pagespeed.web.dev → aim for 90+ mobile
+
+ONGOING (MONTHLY)
+-----------------
+- Keep careers openings in src/data/openings.js current (JobPosting schema
+  uses datePosted 2026-07-01 default — update when roles change).
+- Check Search Console coverage report for crawl errors.
+- Add new FAQ entries in src/data/faqs.js when clients ask new questions
+  (each one is a potential rich result).
+- Publish real content when possible (case studies / blog) — content is the
+  strongest long-term ranking signal.
+
+NOTES
+-----
+- After any content change, redeploy with `npm run build:seo` so the
+  prerendered HTML stays in sync.
+- public/api/ (old PHP) is unused and can be deleted before upload.
+- If VITE_SITE_URL env is set, it overrides https://www.essixx.com in
+  sitemap/canonicals — leave unset for production.

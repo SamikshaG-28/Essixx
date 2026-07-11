@@ -1,14 +1,51 @@
-import { useRef } from 'react'
-import { motion, useInView, useReducedMotion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion'
 import { Reveal } from './Reveal.jsx'
 
 const EASE = [0.22, 1, 0.36, 1]
+const NODE_CYCLE_MS = 3000
 
 const CORE_LAYERS = [
-  { id: 'ai', label: 'AI INTELLIGENCE', x: 10, y: 50, shape: 'pentagon', accent: true, delay: 1.05 },
-  { id: 'web3', label: 'WEB3 LAYER', x: 82, y: 20, shape: 'circle', accent: true, delay: 0.88 },
-  { id: 'data', label: 'DATA INFRASTRUCTURE', x: 84, y: 78, shape: 'circle', accent: false, delay: 1.22 },
-  { id: 'markets', label: 'TRADITIONAL MARKETS', x: 14, y: 80, shape: 'square', accent: false, delay: 1.15 },
+  {
+    id: 'ai',
+    label: 'AI INTELLIGENCE',
+    x: 10,
+    y: 50,
+    shape: 'pentagon',
+    accent: true,
+    delay: 1.05,
+    desc: 'Automation, copilots and insight woven into every workflow.',
+  },
+  {
+    id: 'web3',
+    label: 'WEB3 LAYER',
+    x: 82,
+    y: 20,
+    shape: 'circle',
+    accent: true,
+    delay: 0.88,
+    desc: 'Wallets, contracts and on-chain data connected to your product.',
+  },
+  {
+    id: 'data',
+    label: 'DATA INFRASTRUCTURE',
+    x: 84,
+    y: 78,
+    shape: 'circle',
+    accent: false,
+    delay: 1.22,
+    desc: 'Pipelines, storage and realtime sync that scale with you.',
+  },
+  {
+    id: 'markets',
+    label: 'TRADITIONAL MARKETS',
+    x: 14,
+    y: 80,
+    shape: 'square',
+    accent: false,
+    delay: 1.15,
+    desc: 'Payments, commerce and classic rails unified with the new stack.',
+  },
 ]
 
 const CORE_FEATURES = [
@@ -30,13 +67,6 @@ const CORE_FEATURES = [
 ]
 
 const HUB = { x: 50, y: 48 }
-
-const SOLID_SPOKES = [
-  { x2: 10, y2: 50, accent: true, delay: 0.2 },
-  { x2: 82, y2: 20, accent: true, delay: 0.32 },
-  { x2: 84, y2: 78, accent: false, delay: 0.44 },
-  { x2: 14, y2: 80, accent: false, delay: 0.56 },
-]
 
 const DASHED_WEB = [
   [10, 50, 14, 80],
@@ -61,10 +91,13 @@ const ANCHORS = [
   [6.8, 66.5],
 ]
 
-function WebLine({ x1, y1, x2, y2, dashed, accent, delay, play }) {
+const SPOKE_DELAYS = { ai: 0.2, web3: 0.32, data: 0.44, markets: 0.56 }
+
+function WebLine({ x1, y1, x2, y2, dashed, accent, live, delay, play }) {
   const cls = [
     dashed ? 'sx-core-line sx-core-line--dashed' : 'sx-core-line sx-core-line--solid',
     accent ? 'is-accent' : '',
+    live ? 'is-live' : '',
   ]
     .filter(Boolean)
     .join(' ')
@@ -150,19 +183,41 @@ function CoreWebDiagram() {
   const reduce = useReducedMotion()
   const play = inView || reduce
 
+  const [activeId, setActiveId] = useState(null)
+  const [pinned, setPinned] = useState(false)
+
+  useEffect(() => {
+    if (!play || reduce || pinned) return undefined
+    const timer = setInterval(() => {
+      setActiveId((current) => {
+        const idx = CORE_LAYERS.findIndex((l) => l.id === current)
+        return CORE_LAYERS[(idx + 1) % CORE_LAYERS.length].id
+      })
+    }, NODE_CYCLE_MS)
+    return () => clearInterval(timer)
+  }, [play, reduce, pinned])
+
+  const activeLayer = CORE_LAYERS.find((l) => l.id === activeId) || null
+
+  const selectNode = (id) => {
+    setPinned(true)
+    setActiveId(id)
+  }
+
   return (
     <div className="sx-core-stage">
       <div className="sx-core-diagram" ref={ref}>
         <svg className="sx-core-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          {SOLID_SPOKES.map((spoke) => (
+          {CORE_LAYERS.map((layer) => (
             <WebLine
-              key={`spoke-${spoke.x2}-${spoke.y2}`}
+              key={`spoke-${layer.id}`}
               x1={HUB.x}
               y1={HUB.y}
-              x2={spoke.x2}
-              y2={spoke.y2}
-              accent={spoke.accent}
-              delay={spoke.delay}
+              x2={layer.x}
+              y2={layer.y}
+              accent={layer.accent}
+              live={activeId === layer.id}
+              delay={SPOKE_DELAYS[layer.id]}
               play={play}
             />
           ))}
@@ -239,25 +294,43 @@ function CoreWebDiagram() {
             </motion.span>
           </motion.div>
 
-          <motion.p
-            className="sx-core-hub-desc"
-            initial={{ opacity: 0, y: 10 }}
-            animate={play ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-            transition={{ duration: 0.55, delay: 0.28, ease: EASE }}
-          >
-            Unified capital system
-            <br />
-            AI-powered orchestration
-            <br />
-            Central intelligence layer
-          </motion.p>
+          <div className="sx-core-hub-desc-wrap">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.p
+                key={activeLayer ? activeLayer.id : 'default'}
+                className="sx-core-hub-desc"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.4, ease: EASE }}
+              >
+                {activeLayer ? (
+                  <>
+                    <span className="sx-core-hub-desc-label">{activeLayer.label}</span>
+                    {activeLayer.desc}
+                  </>
+                ) : (
+                  <>
+                    Unified capital system
+                    <br />
+                    AI-powered orchestration
+                    <br />
+                    Central intelligence layer
+                  </>
+                )}
+              </motion.p>
+            </AnimatePresence>
+          </div>
         </motion.div>
 
         {CORE_LAYERS.map((node) => (
-          <motion.div
+          <motion.button
             key={node.id}
-            className="sx-core-node"
+            type="button"
+            className={`sx-core-node${activeId === node.id ? ' is-active' : ''}`}
             style={{ left: `${node.x}%`, top: `${node.y}%` }}
+            onClick={() => selectNode(node.id)}
+            onMouseEnter={() => setActiveId(node.id)}
             initial={{ opacity: 0, scale: 0 }}
             animate={play ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
             transition={{
@@ -266,6 +339,7 @@ function CoreWebDiagram() {
               ease: [0.34, 1.45, 0.64, 1],
             }}
           >
+            <span className="sx-core-node-ring" aria-hidden="true" />
             <CoreNodeIcon shape={node.shape} accent={node.accent} />
             <motion.span
               initial={{ opacity: 0 }}
@@ -274,7 +348,7 @@ function CoreWebDiagram() {
             >
               {node.label}
             </motion.span>
-          </motion.div>
+          </motion.button>
         ))}
       </div>
     </div>
@@ -296,6 +370,7 @@ export default function CoreCapabilities() {
             <br />
             Multiple intelligence layers.
           </h2>
+          <p className="sx-core-hint">Hover or tap a layer to explore the system</p>
         </Reveal>
 
         <CoreWebDiagram />

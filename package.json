@@ -7,6 +7,8 @@
     "dev": "vite",
     "dev:php": "php -S 127.0.0.1:8787 -t public",
     "build": "vite build",
+    "prerender": "node scripts/prerender.mjs",
+    "build:seo": "vite build && node scripts/prerender.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -36,6 +38,8 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "puppeteer": "^25.3.0",
+    "sharp": "^0.35.3",
     "vite": "^8.0.12",
     "vite-plugin-sitemap": "^0.8.2"
   }

@@ -44,19 +44,43 @@ export const siteConfig = {
     'business website India',
     'software development company Pune',
   ],
-  ogImage: `${SITE_URL}/career-poster-1.png`,
+  ogImage: `${SITE_URL}/og-image.png`,
   ogImageAlt:
     'Essixx — Professional website development for Pune businesses. Special offer from ₹19,999.',
-  themeColor: '#0091bf',
+  themeColor: '#82c341',
   foundingDate: '2014',
   priceRange: '₹₹',
   services: [
-    'Web Design',
-    'Web Development',
-    'App Development',
-    'Data & AI Consulting',
-    'Digital Workplace Solutions',
-    'IT Modernization',
+    {
+      name: 'Web Design',
+      description: 'Modern, responsive website design for startups and growing businesses.',
+    },
+    {
+      name: 'Web Development',
+      description: 'Custom website and web app development with modern stacks, from ₹19,999.',
+    },
+    {
+      name: 'App Development',
+      description: 'Android and iOS mobile app development, from concept to store launch.',
+    },
+    {
+      name: 'Digital Marketing',
+      description:
+        'Social media management, content, reels and ad campaigns across Facebook, Instagram and YouTube.',
+    },
+    {
+      name: 'Data & AI Consulting',
+      description: 'AI automation, analytics and intelligence layers for business workflows.',
+    },
+    {
+      name: 'IT Modernization',
+      description: 'Migration of legacy systems to modern cloud-native infrastructure.',
+    },
+  ],
+  marketingPlans: [
+    { name: 'Starter Kit', price: '49999', description: '5-page website, 12 posts + 4 reels per month, laptop included' },
+    { name: 'Growth Kit', price: '99999', description: '8–10 page website, 20 posts + 8 reels per month, laptop included' },
+    { name: 'Premium Kit', price: '149999', description: '10–15 page website, 30 posts + 12 reels per month, laptop included' },
   ],
 }
 
@@ -99,6 +123,85 @@ export function buildBreadcrumbJsonLd(items = []) {
   }
 }
 
+export function buildFaqJsonLd(faqs = []) {
+  if (!faqs.length) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+}
+
+export function buildJobPostingJsonLd(job) {
+  const { url, name, address } = siteConfig
+  const remote = /remote/i.test(job.location)
+  const posting = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description:
+      job.description ||
+      `${job.title} role at ${name} (${job.department}). ${job.type}, ${job.location}.`,
+    datePosted: job.datePosted || '2026-07-01',
+    employmentType: job.type === 'Contract' ? 'CONTRACTOR' : job.type.toUpperCase().replace('-', '_'),
+    hiringOrganization: {
+      '@type': 'Organization',
+      name,
+      sameAs: url,
+      logo: absoluteUrl('/essixx-logo.png'),
+    },
+    jobLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: address.addressLocality,
+        addressRegion: address.addressRegion,
+        addressCountry: address.addressCountry,
+      },
+    },
+    directApply: true,
+  }
+  if (remote) {
+    posting.jobLocationType = 'TELECOMMUTE'
+    posting.applicantLocationRequirements = {
+      '@type': 'Country',
+      name: 'India',
+    }
+  }
+  return posting
+}
+
+export function buildMarketingOffersJsonLd() {
+  const { url, name, marketingPlans } = siteConfig
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${url}/#digital-marketing`,
+    name: `${name} Digital Marketing`,
+    serviceType: 'Digital Marketing',
+    provider: { '@id': `${url}/#organization` },
+    areaServed: { '@type': 'Country', name: 'India' },
+    description:
+      'Complete business kits: website, social media content, reels, ad management and hardware — monthly plans.',
+    offers: marketingPlans.map((plan) => ({
+      '@type': 'Offer',
+      name: plan.name,
+      description: plan.description,
+      price: plan.price,
+      priceCurrency: 'INR',
+      url: `${url}/#plans`,
+      availability: 'https://schema.org/InStock',
+    })),
+  }
+}
+
 export function buildJsonLd() {
   const {
     name,
@@ -115,6 +218,7 @@ export function buildJsonLd() {
     foundingDate,
     priceRange,
     services,
+    tagline,
   } = siteConfig
 
   const addressBlock = {
@@ -143,11 +247,29 @@ export function buildJsonLd() {
         },
         image: ogImage,
         description,
+        slogan: tagline,
         email,
         telephone: phoneDisplay,
         foundingDate,
         sameAs: Object.values(social).filter(Boolean),
         address: addressBlock,
+        contactPoint: {
+          '@type': 'ContactPoint',
+          contactType: 'customer support',
+          email,
+          telephone: phone,
+          areaServed: 'IN',
+          availableLanguage: ['en', 'hi', 'mr'],
+        },
+        knowsAbout: [
+          'Web development',
+          'Mobile app development',
+          'UI/UX design',
+          'Digital marketing',
+          'AI automation',
+          'E-commerce',
+          'SEO',
+        ],
       },
       {
         '@type': 'WebSite',
@@ -173,10 +295,18 @@ export function buildJsonLd() {
           latitude: geo.latitude,
           longitude: geo.longitude,
         },
-        areaServed: {
-          '@type': 'City',
-          name: 'Pune',
-        },
+        areaServed: [
+          { '@type': 'City', name: 'Pune' },
+          { '@type': 'Country', name: 'India' },
+        ],
+        openingHoursSpecification: [
+          {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            opens: '10:00',
+            closes: '19:00',
+          },
+        ],
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
           name: 'Digital services',
@@ -185,7 +315,8 @@ export function buildJsonLd() {
             position: index + 1,
             itemOffered: {
               '@type': 'Service',
-              name: service,
+              name: service.name,
+              description: service.description,
               provider: { '@id': `${url}/#organization` },
             },
           })),

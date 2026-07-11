@@ -7,7 +7,9 @@ import HeroDashboard from '../components/home/HeroDashboard.jsx'
 import IntroSection from '../components/home/IntroSection.jsx'
 import CoreCapabilities from '../components/home/CoreCapabilities.jsx'
 import IntegrationsSection from '../components/home/IntegrationsSection.jsx'
+import DigitalMarketingSection from '../components/home/DigitalMarketingSection.jsx'
 import OurTeamSection from '../components/home/OurTeamSection.jsx'
+import FaqSection from '../components/home/FaqSection.jsx'
 import ContactFooter from '../components/home/ContactFooter.jsx'
 import './HomePage.css'
 
@@ -51,8 +53,11 @@ export default function HomePage() {
 
         <HeroMountainReveal side="left" delay={0.48} className="sx-hero-mountain sx-hero-mountain--left">
           <img
-            src="/left.png"
+            src="/left.webp"
             alt=""
+            width={456}
+            height={689}
+            fetchPriority="high"
             aria-hidden="true"
             draggable={false}
           />
@@ -90,8 +95,11 @@ export default function HomePage() {
 
         <HeroMountainReveal side="right" delay={0.58} className="sx-hero-mountain sx-hero-mountain--right">
           <img
-            src="/right.png"
+            src="/right.webp"
             alt=""
+            width={565}
+            height={574}
+            fetchPriority="high"
             aria-hidden="true"
             draggable={false}
           />
@@ -112,6 +120,8 @@ export default function HomePage() {
       <CoreCapabilities />
 
       <IntegrationsSection />
+
+      <DigitalMarketingSection />
 
       {/* Comparison */}
       <section className="sx-compare">
@@ -149,11 +159,7 @@ export default function HomePage() {
       <section className="sx-live">
         <span className="sx-live-label">Live system activity</span>
         <div className="sx-live-track-wrap">
-          <motion.div
-            className="sx-live-track"
-            animate={{ x: ['0%', '-50%'] }}
-            transition={{ duration: 24, repeat: Infinity, ease: 'linear' }}
-          >
+          <div className="sx-live-track">
             {[...LIVE_ITEMS, ...LIVE_ITEMS].map((item, i) => (
               <div key={i} className="sx-live-item">
                 <span className="sx-live-dot" aria-hidden="true" />
@@ -163,11 +169,13 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
       <OurTeamSection />
+
+      <FaqSection />
 
       <ContactFooter />
       </main>

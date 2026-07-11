@@ -11,10 +11,12 @@ export default function Seo({
   locale = siteConfig.locale,
   themeColor = siteConfig.themeColor,
   robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
-  jsonLd = buildJsonLd(),
+  jsonLd = [],
 }) {
   const canonicalUrl = absoluteUrl(path)
-  const jsonLdBlocks = Array.isArray(jsonLd) ? jsonLd : [jsonLd]
+  // Base Organization/WebSite/LocalBusiness graph is always emitted,
+  // page-specific blocks are appended after it.
+  const jsonLdBlocks = [buildJsonLd(), ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])]
   const {
     name,
     email,

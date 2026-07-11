@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /checkout
+Disallow: /payment/
 
 Sitemap: https://www.essixx.com/sitemap.xml
