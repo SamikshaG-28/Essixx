@@ -9,7 +9,7 @@ export const siteConfig = {
   tagline: 'Building digital futures',
   title: 'Essixx — Web Development & Digital Transformation Studio | Pune',
   description:
-    'Essixx helps startups and businesses in Pune build modern websites, mobile apps, and digital products. Web design, development, SEO-friendly sites from ₹19,999. Trusted technology partner.',
+    'Essixx is a freelance web development studio in Pune. Contact us to build your website — development starts from ₹19,999 only.',
   url: SITE_URL,
   locale: 'en_IN',
   language: 'en',
@@ -53,34 +53,16 @@ export const siteConfig = {
   services: [
     {
       name: 'Web Design',
-      description: 'Modern, responsive website design for startups and growing businesses.',
+      description: 'Modern, responsive website design for businesses and individuals.',
     },
     {
       name: 'Web Development',
-      description: 'Custom website and web app development with modern stacks, from ₹19,999.',
+      description: 'Freelance website development starting from ₹19,999.',
     },
     {
       name: 'App Development',
       description: 'Android and iOS mobile app development, from concept to store launch.',
     },
-    {
-      name: 'Digital Marketing',
-      description:
-        'Social media management, content, reels and ad campaigns across Facebook, Instagram and YouTube.',
-    },
-    {
-      name: 'Data & AI Consulting',
-      description: 'AI automation, analytics and intelligence layers for business workflows.',
-    },
-    {
-      name: 'IT Modernization',
-      description: 'Migration of legacy systems to modern cloud-native infrastructure.',
-    },
-  ],
-  marketingPlans: [
-    { name: 'Starter Kit', price: '49999', description: '5-page website, 12 posts + 4 reels per month, laptop included' },
-    { name: 'Growth Kit', price: '99999', description: '8–10 page website, 20 posts + 8 reels per month, laptop included' },
-    { name: 'Premium Kit', price: '149999', description: '10–15 page website, 30 posts + 12 reels per month, laptop included' },
   ],
 }
 
@@ -178,27 +160,26 @@ export function buildJobPostingJsonLd(job) {
   return posting
 }
 
-export function buildMarketingOffersJsonLd() {
-  const { url, name, marketingPlans } = siteConfig
+export function buildWebsiteOfferJsonLd() {
+  const { url, name } = siteConfig
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    '@id': `${url}/#digital-marketing`,
-    name: `${name} Digital Marketing`,
-    serviceType: 'Digital Marketing',
+    '@id': `${url}/#website-development`,
+    name: `${name} Website Development`,
+    serviceType: 'Website Development',
     provider: { '@id': `${url}/#organization` },
     areaServed: { '@type': 'Country', name: 'India' },
     description:
-      'Complete business kits: website, social media content, reels, ad management and hardware — monthly plans.',
-    offers: marketingPlans.map((plan) => ({
+      'Freelance website development. Contact us to build your site — starting from ₹19,999 only.',
+    offers: {
       '@type': 'Offer',
-      name: plan.name,
-      description: plan.description,
-      price: plan.price,
+      name: 'Website development',
+      price: '19999',
       priceCurrency: 'INR',
-      url: `${url}/#plans`,
+      url: `${url}/#hire`,
       availability: 'https://schema.org/InStock',
-    })),
+    },
   }
 }
 

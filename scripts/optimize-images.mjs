@@ -18,9 +18,6 @@ const TARGETS = [
   'footer-rocks.png',
   'careers/people.png',
   'team/kartik-sabale.png',
-  'team/tejas-khairnar.png',
-  'team/shilpa-shivamre.png',
-  'team/ashish-shivmare.png',
   'team/pratiksha-relekar.png',
 ]
 

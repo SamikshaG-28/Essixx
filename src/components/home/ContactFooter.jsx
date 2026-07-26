@@ -24,7 +24,8 @@ export default function ContactFooter() {
           <Reveal className="sx-footer-col sx-footer-col--lead">
             <h2>We&apos;d love to hear from you</h2>
             <p>
-              We&apos;re always open to new ideas, partnerships, and opportunities.
+              We are freelancers. Want a website? Contact us — development starts from
+              ₹19,999 only.
             </p>
           </Reveal>
 

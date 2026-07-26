@@ -2,31 +2,31 @@ export const FAQS = [
   {
     question: 'How much does a website from Essixx cost?',
     answer:
-      'Business websites start at ₹19,999 for a modern, responsive, SEO-friendly site. Larger projects like web apps, e-commerce stores, and custom platforms are quoted based on scope after a free consultation.',
+      'Website development starts from ₹19,999 only. That covers a modern, responsive, SEO-friendly business site. Larger projects like web apps or e-commerce are quoted after a quick chat.',
+  },
+  {
+    question: 'Are you freelancers or an agency?',
+    answer:
+      'We are freelancers. If you want to develop your website, contact us directly — no agency markup, clear communication, and hands-on delivery.',
   },
   {
     question: 'How long does it take to build and launch a website?',
     answer:
-      'A standard business website ships in 2–4 weeks. Bigger products move through our four-phase process — Discover, Design, Build, Launch — with a working demo every sprint, and 99.2% of our milestones deliver on time.',
-  },
-  {
-    question: 'What is included in the Digital Marketing plans?',
-    answer:
-      'Every kit includes a professional website, monthly social media content (posts and reels) for Facebook, Instagram and YouTube, ad campaign management with a dedicated ad budget, a free monthly podcast, and even a laptop. Plans start at ₹49,999 per month.',
+      'A standard business website usually ships in 2–4 weeks. You see progress along the way, with a clear path from concept to launch.',
   },
   {
     question: 'Which technologies does Essixx use?',
     answer:
-      'We build with modern stacks: React and React Native for web and mobile apps, Firebase and Supabase for cloud backends, and AI integrations with OpenAI, Claude and Gemini. Payments are handled through Stripe, Razorpay, PayPal and Cashfree.',
+      'We build with modern stacks: React and React Native for web and mobile apps, Firebase and Supabase for cloud backends, and AI tools when a project needs them. Payments can use Razorpay, Stripe, PayPal, or Cashfree.',
   },
   {
     question: 'Do you provide support after launch?',
     answer:
-      'Yes. Every project includes post-launch support (1–3 months depending on the plan), and we offer ongoing maintenance, hosting management, and growth marketing so your product keeps improving after go-live.',
+      'Yes. We can help with fixes, small updates, and guidance after go-live so your site stays in good shape.',
   },
   {
-    question: 'Do you work with clients outside Pune?',
+    question: 'How do I get started?',
     answer:
-      'Absolutely. We are based in Pune, Maharashtra, but work with startups and businesses across India and internationally — fully remote collaboration with weekly progress reviews.',
+      'Just contact us — mail info@essixx.com or use the contact section on this site. Tell us what you need, and we will share the next steps. Website development starts from ₹19,999 only.',
   },
 ]

@@ -2,6 +2,10 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Seo from './components/Seo.jsx'
 import HomePage from './pages/HomePage.jsx'
+// Checkout / payment return stay eager — UrbanCart lands here; must never 404
+// while a lazy chunk fails or Suspense is still empty.
+import CheckoutPage from './pages/CheckoutPage.jsx'
+import PaymentReturnPage from './pages/PaymentReturnPage.jsx'
 import { FAQS } from './data/faqs.js'
 import { OPENINGS } from './data/openings.js'
 import {
@@ -10,27 +14,28 @@ import {
   buildBreadcrumbJsonLd,
   buildFaqJsonLd,
   buildJobPostingJsonLd,
-  buildMarketingOffersJsonLd,
+  buildWebsiteOfferJsonLd,
   absoluteUrl,
 } from './seo/siteConfig.js'
 
-// Route-level code splitting: the homepage stays in the main bundle,
-// everything else (including Firebase on checkout pages) loads on demand.
+// Route-level code splitting for marketing pages only.
 const LaunchAppPage = lazy(() => import('./pages/LaunchAppPage.jsx'))
 const AboutPage = lazy(() => import('./pages/AboutPage.jsx'))
 const CareersPage = lazy(() => import('./pages/CareersPage.jsx'))
-const CheckoutPage = lazy(() => import('./pages/CheckoutPage.jsx'))
-const PaymentReturnPage = lazy(() => import('./pages/PaymentReturnPage.jsx'))
+const PratikshaProfilePage = lazy(() => import('./pages/PratikshaProfilePage.jsx'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'))
 
-// Legacy HashRouter URLs (e.g. /#/checkout?orderId=X from old UrbanCart links)
+// Hash URLs from UrbanCart stubs (/#/checkout?orderId=…) or old links
 // are rewritten to real path URLs before the router mounts.
-if (typeof window !== 'undefined' && window.location.hash.startsWith('#/')) {
-  const raw = window.location.hash.slice(1)
-  const [hashPath, hashQuery = ''] = raw.split('?')
-  const search = window.location.search.replace(/^\?/, '')
-  const combined = [search, hashQuery].filter(Boolean).join('&')
-  window.history.replaceState(null, '', hashPath + (combined ? `?${combined}` : ''))
+if (typeof window !== 'undefined') {
+  const hash = window.location.hash || ''
+  if (hash.startsWith('#/')) {
+    const raw = hash.slice(1)
+    const [hashPath, hashQuery = ''] = raw.split('?')
+    const search = window.location.search.replace(/^\?/, '')
+    const combined = [search, hashQuery].filter(Boolean).join('&')
+    window.history.replaceState(null, '', hashPath + (combined ? `?${combined}` : ''))
+  }
 }
 
 function App() {
@@ -51,7 +56,7 @@ function App() {
                     description: siteConfig.description,
                   }),
                   buildFaqJsonLd(FAQS),
-                  buildMarketingOffersJsonLd(),
+                  buildWebsiteOfferJsonLd(),
                 ]}
               />
               <a href="/?scroll=home" className="skip-link">
@@ -66,16 +71,16 @@ function App() {
           element={
             <>
               <Seo
-                title="Launch Essixx Projects — Gojira, HRM, Genious Bots & Digital Marketing"
-                description="Explore Essixx projects including Gojira, Essixx HRM, Genious Bots, and Digital Marketing solutions."
+                title="Launch Essixx Projects — XiPay, Ferron, Motvyn & Kasbill"
+                description="Explore Essixx products including XiPay, Ferron laundry billing, Motvyn, and Kasbill — built by Kartik Sabale and Pratiksha Relekar."
                 path="/launch"
                 keywords={[
                   ...siteConfig.keywords,
                   'Essixx projects',
-                  'Gojira',
-                  'Essixx HRM',
-                  'Genious Bots',
-                  'Digital Marketing',
+                  'XiPay',
+                  'Ferron',
+                  'Motvyn',
+                  'Kasbill',
                 ]}
                 ogImage={absoluteUrl('/essixx-logo.png')}
                 ogImageAlt="Essixx projects launch page preview"
@@ -84,7 +89,7 @@ function App() {
                     path: '/launch',
                     title: 'Launch Essixx Projects',
                     description:
-                      'Open and explore Essixx products and project workspaces from a single launch page.',
+                      'Open and explore Essixx products — XiPay, Ferron, Motvyn, and Kasbill.',
                   }),
                   buildBreadcrumbJsonLd([
                     { name: 'Home', path: '/' },
@@ -162,8 +167,58 @@ function App() {
             </>
           }
         />
+        <Route
+          path="/pratiksha"
+          element={
+            <>
+              <Seo
+                title="Pratiksha Relekar — Design | Essixx"
+                description="Pratiksha Relekar is a freelance designer and developer at Essixx. Explore her GitHub projects, skills, and work with Kartik Sabale."
+                path="/pratiksha"
+                keywords={[
+                  ...siteConfig.keywords,
+                  'Pratiksha Relekar',
+                  'Essixx design',
+                  'freelance designer India',
+                ]}
+                ogImage={absoluteUrl('/team/pratiksha-relekar.webp')}
+                ogImageAlt="Pratiksha Relekar — Design at Essixx"
+                jsonLd={[
+                  buildPageJsonLd({
+                    path: '/pratiksha',
+                    title: 'Pratiksha Relekar — Design | Essixx',
+                    description:
+                      'Profile of Pratiksha Relekar — freelance designer and developer building products with Essixx.',
+                    type: 'ProfilePage',
+                  }),
+                  buildBreadcrumbJsonLd([
+                    { name: 'Home', path: '/' },
+                    { name: 'Pratiksha Relekar', path: '/pratiksha' },
+                  ]),
+                  {
+                    '@context': 'https://schema.org',
+                    '@type': 'Person',
+                    '@id': `${siteConfig.url}/pratiksha#person`,
+                    name: 'Pratiksha Relekar',
+                    jobTitle: 'Design',
+                    url: `${siteConfig.url}/pratiksha`,
+                    image: absoluteUrl('/team/pratiksha-relekar.webp'),
+                    worksFor: { '@id': `${siteConfig.url}/#organization` },
+                    sameAs: [
+                      'https://github.com/pratiksha-relekar',
+                      'https://in.linkedin.com/in/pratiksha-relekar-0a49471b4',
+                    ],
+                  },
+                ]}
+              />
+              <PratikshaProfilePage />
+            </>
+          }
+        />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/checkout/" element={<CheckoutPage />} />
           <Route path="/payment/return" element={<PaymentReturnPage />} />
+          <Route path="/payment/return/" element={<PaymentReturnPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>

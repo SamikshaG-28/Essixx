@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import { preview } from 'vite'
 import puppeteer from 'puppeteer'
 
-const ROUTES = ['/', '/about', '/careers', '/launch']
+const ROUTES = ['/', '/about', '/careers', '/launch', '/pratiksha']
 const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
 
 /**

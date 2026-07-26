@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Redirecting to checkout...</title>
+    <script>
+      (function () {
+        // UrbanCart opens /checkout?orderId=... — this stub always exists as a
+        // real file on Hostinger so the path never 404s. Hand off to the SPA
+        // via hash; App.jsx rewrites #/checkout → /checkout for BrowserRouter.
+        var target = '/#/checkout' + window.location.search
+        window.location.replace(target)
+      })()
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to secure checkout…</p>
+  </body>
+</html>

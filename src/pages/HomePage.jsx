@@ -7,7 +7,8 @@ import HeroDashboard from '../components/home/HeroDashboard.jsx'
 import IntroSection from '../components/home/IntroSection.jsx'
 import CoreCapabilities from '../components/home/CoreCapabilities.jsx'
 import IntegrationsSection from '../components/home/IntegrationsSection.jsx'
-import DigitalMarketingSection from '../components/home/DigitalMarketingSection.jsx'
+import ProjectsSection from '../components/home/ProjectsSection.jsx'
+import FreelancerOfferSection from '../components/home/FreelancerOfferSection.jsx'
 import OurTeamSection from '../components/home/OurTeamSection.jsx'
 import FaqSection from '../components/home/FaqSection.jsx'
 import ContactFooter from '../components/home/ContactFooter.jsx'
@@ -22,9 +23,9 @@ const COMPARE_ROWS = [
 
 const LIVE_ITEMS = [
   { title: 'Unified infrastructure', sub: '+ 2.4% performance impact' },
-  { title: 'New market signal detected', sub: 'Volatility decreasing across equities' },
-  { title: 'Mobile release shipped', sub: 'Gojira Android v2.1 live on Play Store' },
-  { title: 'AI workflow applied', sub: 'Automation reduced delivery time 18%' },
+  { title: 'Ferron live on Play Store', sub: 'Laundry billing app shipping updates' },
+  { title: 'XiPay UI kit published', sub: 'Free payment gateway kit on GitHub' },
+  { title: 'Motvyn in testing', sub: 'Landing live — Play Store release upcoming' },
 ]
 
 function scrollTo(id) {
@@ -121,7 +122,9 @@ export default function HomePage() {
 
       <IntegrationsSection />
 
-      <DigitalMarketingSection />
+      <ProjectsSection />
+
+      <FreelancerOfferSection />
 
       {/* Comparison */}
       <section className="sx-compare">
@@ -129,9 +132,9 @@ export default function HomePage() {
         <Reveal>
           <span className="sx-badge sx-badge--center sx-badge--light">Why Essixx</span>
           <h2 className="sx-section-title sx-section-title--light">
-            Built for modern teams.
+            Freelance quality.
             <br />
-            Not legacy agencies.
+            Agency prices? Not here.
           </h2>
         </Reveal>
         <Reveal className="sx-compare-table" delay={0.1}>

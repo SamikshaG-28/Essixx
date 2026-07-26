@@ -280,7 +280,7 @@ function CategoryCard({ category }) {
 
 export default function IntegrationsSection() {
   return (
-    <section id="projects" className="sx-integrations">
+    <section id="integrations" className="sx-integrations">
       <div className="sx-int-bg" aria-hidden="true">
         <div className="sx-int-grid" />
         <div className="sx-int-glow sx-int-glow--left" />

@@ -72,10 +72,9 @@ export default function AboutPage() {
               Essixx was born, to make the process easier, smarter, and way less stressful.
             </p>
             <p>
-              We started Essixx with a simple idea: help people focus on their skills,
-              experience, and dreams, not technical headaches. We trusted that by building
-              the right tools, we could remove the stress and bring out the best in every
-              product story.
+              We started Essixx as freelancers with a simple idea: help people focus on
+              their skills and dreams, not technical headaches. Want a website? Contact
+              us — development starts from ₹19,999 only.
             </p>
           </div>
         </section>
@@ -104,10 +103,10 @@ export default function AboutPage() {
             studio, it&apos;s a way to help people dream bigger and move forward faster.
           </p>
           <p>
-            Behind every launch is a real story, a real team. That&apos;s why we created
-            Essixx, to make sure those stories shine.
+            Behind every launch is a real story. That&apos;s why we created Essixx —
+            to make sure those stories shine.
           </p>
-          <p className="about-signature">— The Essixx team</p>
+          <p className="about-signature">— Kartik Sabale, Pratiksha Relekar &amp; Kajal Sabale</p>
         </section>
 
         <section className="about-subscribe">

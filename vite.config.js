@@ -14,13 +14,14 @@ export default defineConfig(({ mode }) => {
       babel({ presets: [reactCompilerPreset()] }),
       Sitemap({
         hostname,
-        dynamicRoutes: ['/launch', '/about', '/careers'],
+        dynamicRoutes: ['/launch', '/about', '/careers', '/pratiksha'],
         exclude: ['/checkout', '/payment/return', '/payment'],
         changefreq: {
           '/': 'weekly',
           '/about': 'monthly',
           '/careers': 'weekly',
           '/launch': 'monthly',
+          '/pratiksha': 'monthly',
           '*': 'weekly',
         },
         priority: {
@@ -28,6 +29,7 @@ export default defineConfig(({ mode }) => {
           '/about': 0.8,
           '/careers': 0.7,
           '/launch': 0.7,
+          '/pratiksha': 0.8,
           '*': 0.7,
         },
         generateRobotsTxt: true,

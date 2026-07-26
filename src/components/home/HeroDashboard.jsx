@@ -246,7 +246,7 @@ export default function HeroDashboard() {
                   <span className="sx-dash-avatar">KS</span>
                   <div>
                     <strong>Kartik Sabale</strong>
-                    <small>Founder &amp; CEO · Pune</small>
+                    <small>Builder · Pune</small>
                   </div>
                 </div>
               </DashPart>

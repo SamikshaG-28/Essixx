@@ -1,58 +1,19 @@
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { PRODUCT_PROJECTS } from '../data/projects.js'
 import './LaunchAppPage.css'
 
-const STATUS_STYLES = {
-  launched: { label: 'Launched', className: 'is-launched' },
-  beta: { label: 'In Beta', className: 'is-beta' },
-  'early-access': { label: 'Early Access', className: 'is-early' },
-  development: { label: 'In Development', className: 'is-dev' },
-  'coming-soon': { label: 'Coming Soon', className: 'is-soon' },
+const STATUS_CLASS = {
+  free: 'is-launched',
+  live: 'is-launched',
+  testing: 'is-beta',
+  development: 'is-dev',
 }
 
-const APPS = [
-  {
-    id: 'gojira',
-    name: 'Gojira',
-    tagline: 'Mobile delivery suite',
-    status: 'launched',
-    href: '#',
-    icon: 'GJ',
-    gradient: 'linear-gradient(145deg, #82c341 0%, #4a8f23 100%)',
-  },
-  {
-    id: 'hrm',
-    name: 'Essixx HRM',
-    tagline: 'People & payroll ops',
-    status: 'beta',
-    href: '#',
-    icon: 'HR',
-    gradient: 'linear-gradient(145deg, #0091bf 0%, #005f99 100%)',
-  },
-  {
-    id: 'genious-bots',
-    name: 'Genious Bots',
-    tagline: 'AI automation workflows',
-    status: 'early-access',
-    href: '#',
-    icon: 'GB',
-    gradient: 'linear-gradient(145deg, #7c5cff 0%, #4f2fd6 100%)',
-  },
-  {
-    id: 'digital-marketing',
-    name: 'Digital Marketing',
-    tagline: 'Campaigns & growth stack',
-    status: 'launched',
-    href: '#',
-    icon: 'DM',
-    gradient: 'linear-gradient(145deg, #f97316 0%, #c2410c 100%)',
-  },
-]
-
 function AppTile({ app, index }) {
-  const status = STATUS_STYLES[app.status]
-  const isDisabled = !app.href
+  const href = app.liveUrl || app.playStoreUrl || app.githubUrl
+  const isDisabled = !href
 
   const content = (
     <>
@@ -65,7 +26,9 @@ function AppTile({ app, index }) {
         <span>{app.icon}</span>
       </motion.span>
       <span className="launch-tile-name">{app.name}</span>
-      <span className={`launch-tile-status ${status.className}`}>{status.label}</span>
+      <span className={`launch-tile-status ${STATUS_CLASS[app.status] || 'is-soon'}`}>
+        {app.statusLabel}
+      </span>
       <span className="launch-tile-tagline">{app.tagline}</span>
     </>
   )
@@ -82,12 +45,7 @@ function AppTile({ app, index }) {
           {content}
         </div>
       ) : (
-        <a
-          className="launch-tile-btn"
-          href={app.href}
-          target={app.href.startsWith('http') ? '_blank' : undefined}
-          rel={app.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-        >
+        <a className="launch-tile-btn" href={href} target="_blank" rel="noopener noreferrer">
           {content}
         </a>
       )}
@@ -125,12 +83,14 @@ export default function LaunchAppPage() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           <p className="launch-eyebrow">Essixx projects</p>
-          <h1>Who&apos;s launching?</h1>
-          <p className="launch-subtitle">Pick a project to open your workspace.</p>
+          <h1>Open a product</h1>
+          <p className="launch-subtitle">
+            Built by Kartik Sabale &amp; Pratiksha Relekar — pick a project to visit.
+          </p>
         </motion.div>
 
         <ul className="launch-grid">
-          {APPS.map((app, index) => (
+          {PRODUCT_PROJECTS.map((app, index) => (
             <AppTile key={app.id} app={app} index={index} />
           ))}
         </ul>
@@ -142,7 +102,7 @@ export default function LaunchAppPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.55 }}
         >
-          Request access to beta products
+          Want a website? Contact us
         </motion.a>
       </main>
     </div>
