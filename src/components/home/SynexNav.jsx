@@ -6,7 +6,7 @@ export const NAV_ITEMS = [
   { label: 'Careers', href: '/careers' },
   { label: 'Projects', target: 'projects' },
   { label: 'Clients', target: 'clients' },
-  { label: 'Hire us', target: 'hire' },
+  { label: 'Hire us', target: 'pricing' },
   { label: 'Studio', target: 'studio' },
   { label: 'Contact', target: 'contact' },
 ]

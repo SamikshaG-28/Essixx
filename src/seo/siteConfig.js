@@ -177,7 +177,7 @@ export function buildWebsiteOfferJsonLd() {
       name: 'Website development',
       price: '19999',
       priceCurrency: 'INR',
-      url: `${url}/#hire`,
+      url: `${url}/#pricing`,
       availability: 'https://schema.org/InStock',
     },
   }

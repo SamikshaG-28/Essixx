@@ -1,153 +1,119 @@
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { Reveal } from './Reveal.jsx'
+import './IntroSection.css'
 
-const EASE = [0.22, 1, 0.36, 1]
-const CYCLE_MS = 3600
-
-const PHASES = [
-  {
-    id: 'discover',
-    num: '01',
-    title: 'Discover',
-    desc: 'Workshops, research and a sharp scope — we map the problem before a single line of code.',
-    tags: ['Strategy', 'Research', 'Scope'],
-    stat: { value: '1–2', label: 'weeks to clarity' },
-  },
-  {
-    id: 'design',
-    num: '02',
-    title: 'Design',
-    desc: 'Interfaces and journeys shaped in the open. You see real screens evolving every week.',
-    tags: ['UI / UX', 'Prototype', 'Review'],
-    stat: { value: '100%', label: 'design transparency' },
-  },
-  {
-    id: 'build',
-    num: '03',
-    title: 'Build',
-    desc: 'Modern stacks, clean code and CI from day one — with a working demo every sprint.',
-    tags: ['Develop', 'Test', 'Iterate'],
-    stat: { value: '99.2%', label: 'on-time delivery' },
-  },
-  {
-    id: 'launch',
-    num: '04',
-    title: 'Launch',
-    desc: 'Ship, measure, improve. Support and growth marketing keep momentum after go-live.',
-    tags: ['Deploy', 'Measure', 'Grow'],
-    stat: { value: '+24%', label: 'faster time to market' },
-  },
+const PROMPT_PARTS = [
+  { text: 'Workshops, research and a ', bold: false },
+  { text: 'sharp scope', bold: true },
+  { text: ' — we map the ', bold: false },
+  { text: 'problem before', bold: true },
+  { text: ' a ', bold: false },
+  { text: 'single line of code', bold: true },
+  { text: '.', bold: false },
 ]
 
-function scrollToContact() {
-  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
-
 export default function IntroSection() {
-  const reduce = useReducedMotion()
-  const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
-
-  useEffect(() => {
-    if (reduce || paused) return undefined
-    const timer = setInterval(() => {
-      setActive((i) => (i + 1) % PHASES.length)
-    }, CYCLE_MS)
-    return () => clearInterval(timer)
-  }, [reduce, paused])
-
   return (
-    <section className="sx-intro">
-      <div className="sx-intro-inner">
-        <div className="sx-intro-head">
-          <Reveal className="sx-intro-copy">
-            <span className="sx-badge sx-badge--outline">Essixx studio</span>
-            <h2>
-              From concept to launch,
-              <br />
-              with clarity at every step.
-            </h2>
-          </Reveal>
+    <section className="c1-section" aria-labelledby="c1-title">
+      <div className="c1-container">
+        <p className="c1-badge">Essixx studio</p>
+        <h2 id="c1-title" className="c1-title">
+          From concept to launch, with clarity at every step.
+        </h2>
+        <p className="c1-subtitle">
+          We help startups and growing businesses ship modern websites, apps,
+          <br />
+          and digital products — fast, focused, and built to last.
+        </p>
 
-          <Reveal className="sx-intro-side" delay={0.1}>
-            <p>
-              We help startups and growing businesses ship modern websites, apps,
-              and digital products — fast, focused, and built to last.
-            </p>
-            <button type="button" className="sx-intro-cta" onClick={scrollToContact}>
-              Start a project
-              <span aria-hidden="true">→</span>
-            </button>
-          </Reveal>
+        <div className="c1-grid">
+          <article className="c1-card c1-card-1">
+            <div className="c1-prompt">
+              {PROMPT_PARTS.map((part, i) =>
+                part.bold ? (
+                  <strong key={i} className="c1-blur-text">
+                    {part.text}
+                  </strong>
+                ) : (
+                  <span key={i}>{part.text}</span>
+                ),
+              )}
+            </div>
+
+            <div className="c1-details-pill">
+              <span className="c1-spark" aria-hidden="true">
+                ✦
+              </span>
+              Add more details
+            </div>
+
+            <svg
+              className="c1-cursor"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 2L20 11L11 13L9 22L4 2Z"
+                fill="#0f172a"
+                stroke="#ffffff"
+                strokeWidth="1"
+              />
+            </svg>
+
+            <h3>Discover</h3>
+          </article>
+
+          <article className="c1-card c1-card-2">
+            <div className="c1-api-visual">
+              <img
+                className="c1-network-img"
+                src="https://pub-f170a2592d2c4a1485466404c36807be.r2.dev/viktor/network.svg"
+                alt=""
+                width={400}
+                height={180}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <h3>Design</h3>
+          </article>
+
+          <article className="c1-card c1-card-3">
+            <div className="c1-mesh" aria-hidden="true" />
+            <img
+              className="c1-folder"
+              src="https://pub-f170a2592d2c4a1485466404c36807be.r2.dev/viktor/library%20icon.svg"
+              alt=""
+              width={170}
+              height={170}
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="c1-search">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8" stroke="#64748b" strokeWidth="2" />
+                <line
+                  x1="21"
+                  y1="21"
+                  x2="16.65"
+                  y2="16.65"
+                  stroke="#64748b"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Search projects
+            </div>
+            <h3>Build</h3>
+          </article>
         </div>
-
-        <Reveal delay={0.14}>
-          <div
-            className="sx-journey"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-          >
-            {PHASES.map((phase, i) => {
-              const isActive = i === active
-              return (
-                <button
-                  key={phase.id}
-                  type="button"
-                  className={`sx-journey-step${isActive ? ' is-active' : ''}`}
-                  onClick={() => setActive(i)}
-                  onFocus={() => setActive(i)}
-                  aria-expanded={isActive}
-                >
-                  <div className="sx-journey-step-top">
-                    <span className="sx-journey-num">{phase.num}</span>
-                    <span className="sx-journey-marker" aria-hidden="true">
-                      <span className="sx-journey-marker-dot" />
-                    </span>
-                  </div>
-
-                  <h3 className="sx-journey-title">{phase.title}</h3>
-
-                  <AnimatePresence initial={false}>
-                    {isActive && (
-                      <motion.div
-                        className="sx-journey-detail"
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, transition: { duration: 0.15 } }}
-                        transition={{ duration: 0.4, delay: 0.22, ease: EASE }}
-                      >
-                        <p>{phase.desc}</p>
-
-                        <div className="sx-journey-tags">
-                          {phase.tags.map((tag) => (
-                            <span key={tag}>{tag}</span>
-                          ))}
-                        </div>
-
-                        <div className="sx-journey-stat">
-                          <strong>{phase.stat.value}</strong>
-                          <span>{phase.stat.label}</span>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {isActive && !reduce && !paused && (
-                    <motion.span
-                      key={`progress-${active}`}
-                      className="sx-journey-progress"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: CYCLE_MS / 1000, ease: 'linear' }}
-                      aria-hidden="true"
-                    />
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        </Reveal>
       </div>
     </section>
   )
