@@ -1,8 +1,14 @@
-import { useRef } from 'react'
-import { motion, useInView, useReducedMotion } from 'framer-motion'
-import { Reveal } from './Reveal.jsx'
+import { useEffect, useRef, useState } from 'react'
+import './IntegrationsSection.css'
 
-const EASE = [0.22, 1, 0.36, 1]
+const BG =
+  'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260624_111401_56af5012-2263-45d3-849a-8688084d7c2a.png&w=1280&q=85'
+
+const HEADING = 'Plug into your entire stack'
+const HEADING_DARK_CHARS = 15 // "Plug into your "
+
+const LEAD =
+  'Connect payment gateways, cloud backends, AI models, and data services — unified in one system with real-time sync across every layer.'
 
 const STATS = [
   { value: '40+', label: 'Live integrations' },
@@ -15,312 +21,344 @@ const CATEGORIES = [
     id: 'payments',
     label: 'Payment Gateways',
     desc: 'Stripe, PayPal, Razorpay & UPI-ready checkout flows',
-    integrations: ['stripe', 'paypal', 'razorpay'],
   },
   {
     id: 'backend',
     label: 'Backend & Database',
     desc: 'Firebase & Supabase — auth, realtime DB & serverless APIs',
-    integrations: ['firebase', 'supabase'],
   },
   {
     id: 'ai',
     label: 'AI Tools',
     desc: 'OpenAI, Claude & Gemini for smart product features',
-    integrations: ['openai', 'claude', 'gemini'],
   },
 ]
 
-const BOARD_TILES = [
-  { id: 'stripe', icon: 'stripe', name: 'Stripe', tag: 'Gateway', col: 1, row: 1, cardImage: '/integrations/stripe.png' },
-  { id: 'razorpay', icon: 'razorpay', name: 'Razorpay', tag: 'Gateway', col: 2, row: 1, cardImage: '/integrations/razorpay.png' },
-  { id: 'paypal', icon: 'paypal', name: 'PayPal', tag: 'Gateway', col: 3, row: 1, cardImage: '/integrations/paypal.png' },
-  { id: 'firebase', icon: 'firebase', name: 'Firebase', tag: 'Backend', col: 1, row: 2, cardImage: '/integrations/firebase.png' },
-  { id: 'supabase', icon: 'supabase', name: 'Supabase', tag: 'Database', col: 3, row: 2, cardImage: '/integrations/supabase.png' },
-  { id: 'openai', icon: 'openai', name: 'OpenAI', tag: 'AI', col: 1, row: 3, cardImage: '/integrations/openai.png' },
-  { id: 'claude', icon: 'claude', name: 'Claude', tag: 'AI', col: 2, row: 3, cardImage: '/integrations/claude.png' },
-  { id: 'gemini', icon: 'gemini', name: 'Gemini', tag: 'AI', col: 3, row: 3, cardImage: '/integrations/gemini.png' },
+const ORBIT_AVATARS = [
+  {
+    src: '/integrations/stripe.png',
+    alt: 'Stripe',
+    orbit: 1,
+    deg: 270,
+    radius: 177,
+    size: 58,
+    shape: 'square',
+    glow: 'purple',
+    delay: 0.6,
+  },
+  {
+    src: '/integrations/paypal.png',
+    alt: 'PayPal',
+    orbit: 2,
+    deg: 60,
+    radius: 251,
+    size: 58,
+    shape: 'round',
+    glow: 'yellow',
+    delay: 0.9,
+  },
+  {
+    src: '/integrations/razorpay.png',
+    alt: 'Razorpay',
+    orbit: 2,
+    deg: 180,
+    radius: 251,
+    size: 78,
+    shape: 'round',
+    glow: 'pink',
+    delay: 1.1,
+  },
+  {
+    src: '/integrations/firebase.png',
+    alt: 'Firebase',
+    orbit: 2,
+    deg: 300,
+    radius: 251,
+    size: 58,
+    shape: 'square',
+    glow: 'blue',
+    delay: 1.3,
+  },
+  {
+    src: '/integrations/supabase.png',
+    alt: 'Supabase',
+    orbit: 3,
+    deg: 130,
+    radius: 325,
+    size: 88,
+    shape: 'round',
+    glow: 'pink',
+    delay: 1.5,
+  },
+  {
+    src: '/integrations/openai.png',
+    alt: 'OpenAI',
+    orbit: 4,
+    deg: 30,
+    radius: 399,
+    size: 58,
+    shape: 'round',
+    glow: 'purple',
+    delay: 1.7,
+  },
+  {
+    src: '/integrations/claude.png',
+    alt: 'Claude',
+    orbit: 4,
+    deg: 95,
+    radius: 399,
+    size: 88,
+    shape: 'square24',
+    glow: 'orange',
+    delay: 1.9,
+  },
+  {
+    src: '/integrations/gemini.png',
+    alt: 'Gemini',
+    orbit: 4,
+    deg: 220,
+    radius: 399,
+    size: 88,
+    shape: 'square24',
+    glow: 'pink',
+    delay: 2.1,
+  },
+  {
+    src: '/integrations/stripe.png',
+    alt: 'Stripe',
+    orbit: 4,
+    deg: 320,
+    radius: 399,
+    size: 58,
+    shape: 'round',
+    glow: 'purple',
+    delay: 2.3,
+  },
 ]
 
-function IntegrationIcon({ name, size = 22 }) {
-  switch (name) {
-    case 'stripe':
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M13.1 7.8c0-.9.7-1.2 1.8-1.2 1.6 0 3.5.5 5 1.4V5.1C18.8 4.2 17.2 3.8 15.5 3.8 11.5 3.8 9 5.6 9 8.5c0 5.1 7 4.2 7 6.4 0 1-.9 1.3-2.1 1.3-1.8 0-4-.7-5.8-1.7v4.9c2 0.9 3.9 1.3 5.8 1.3 4.1 0 6.8-2 6.8-5.1 0-5.5-7.2-4.6-7.2-7.6z" fill="#635bff" />
-        </svg>
-      )
-    case 'paypal':
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M8.2 7.5h4.6c2.2 0 3.5 1.1 3.5 2.8 0 3-2.6 3.6-4.3 3.6H9.8L9.2 18H6.8l1.4-10.5z" fill="#009cde" />
-          <path d="M9.8 7.5H7.4L6 18h2.4l.6-3.1h1.7c3.1 0 5.2-1.3 5.2-4.2 0-1.9-1.5-3.2-3.5-3.2H9.8z" fill="#012169" opacity="0.85" />
-        </svg>
-      )
-    case 'razorpay':
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="3" y="5" width="18" height="14" rx="3" fill="#072654" />
-          <path d="M8 9.5h1.8c1.2 0 2 .6 2 1.6s-.8 1.6-2 1.6H9.2V15H8V9.5zm1.2 2.4h.5c.5 0 .8-.2.8-.6s-.3-.6-.8-.6h-.5v1.2zM13.2 9.5h2.4c1.4 0 2.3.8 2.3 2.1v.3c0 1.3-.9 2.1-2.3 2.1h-1.2V15h-1.2V9.5zm2.3 3.2c.7 0 1.1-.4 1.1-1s-.4-1-1.1-1h-1.1v2z" fill="#3395ff" />
-        </svg>
-      )
-    case 'firebase':
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4.5 18.5 11 4.2c.2-.5.9-.5 1.1 0l6.5 14.3H4.5z" fill="#ffa000" />
-          <path d="M4.5 18.5 12 13.5l7.5 5H4.5z" fill="#ffca28" />
-          <path d="M12 4.2 4.5 18.5 12 13.5 19.5 18.5 12 4.2z" fill="#ff8f00" opacity="0.85" />
-        </svg>
-      )
-    case 'supabase':
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M15.5 2.2 8.2 13.4h5.1L8.5 21.8l7.3-11.2h-5.1L15.5 2.2z" fill="#3ECF8E" />
-        </svg>
-      )
-    case 'openai':
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 3.5a8.2 8.2 0 015.8 2.4l1.4-1.4a10 10 0 10-3.5 3.5l1.4-1.4A8.2 8.2 0 0112 3.5zm-5.8 2.4A8.2 8.2 0 0112 3.5v2.2a6 6 0 00-4.2 1.7L6.2 5.9zM4.5 12a8.2 8.2 0 002.4-5.8H4.7a10 10 0 000 10h2.2A8.2 8.2 0 014.5 12zm7.5 7.5a8.2 8.2 0 01-5.8-2.4l-1.4 1.4a10 10 0 103.5-3.5l-1.4 1.4A8.2 8.2 0 0112 19.5zm5.8-2.4A8.2 8.2 0 0112 19.5v-2.2a6 6 0 004.2-1.7l1.6 1.6zM19.5 12a8.2 8.2 0 01-2.4 5.8h2.2a10 10 0 000-10h-2.2A8.2 8.2 0 0119.5 12z" fill="#10a37f" />
-        </svg>
-      )
-    case 'claude':
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="4" y="4" width="16" height="16" rx="4" fill="#d97757" />
-          <path d="M12 7.5c-1.2 0-2.2.4-3 1.1-.8.7-1.2 1.7-1.2 2.9 0 1.1.4 2 1.1 2.7.7.7 1.6 1.1 2.7 1.3v1.5h1.8v-1.5c1.1-.2 2-.6 2.7-1.3.7-.7 1.1-1.6 1.1-2.7 0-1.2-.4-2.2-1.2-2.9-.8-.7-1.8-1.1-3-1.1zm0 1.8c.6 0 1.1.2 1.5.6.4.4.6.9.6 1.6 0 .7-.2 1.2-.6 1.6-.4.4-.9.6-1.5.6s-1.1-.2-1.5-.6c-.4-.4-.6-.9-.6-1.6 0-.7.2-1.2.6-1.6.4-.4.9-.6 1.5-.6z" fill="#fff" />
-        </svg>
-      )
-    case 'gemini':
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 3l2.2 6.8H21l-5.5 4 2.1 6.7L12 16.5 6.4 20.5l2.1-6.7L3 9.8h6.8L12 3z" fill="#4285f4" />
-        </svg>
-      )
-    default:
-      return null
-  }
+function easeOutCubic(t) {
+  return 1 - (1 - t) ** 3
 }
 
-function SyncPulse({ play, reduce }) {
-  return (
-    <span className="sx-int-sync-dot" aria-hidden="true">
-      <motion.span
-        className="sx-int-sync-dot-ring"
-        animate={play && !reduce ? { scale: [1, 1.8], opacity: [0.5, 0] } : { scale: 1, opacity: 0 }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
-      />
-      <span className="sx-int-sync-dot-core" />
-    </span>
-  )
+function useCountUp(target, duration = 2000, delay = 1200) {
+  const [value, setValue] = useState(0)
+  const started = useRef(false)
+
+  useEffect(() => {
+    if (started.current) return undefined
+    started.current = true
+    let raf = 0
+    const timer = window.setTimeout(() => {
+      const start = performance.now()
+      const tick = (now) => {
+        const t = Math.min(1, (now - start) / duration)
+        setValue(Math.round(easeOutCubic(t) * target))
+        if (t < 1) raf = requestAnimationFrame(tick)
+      }
+      raf = requestAnimationFrame(tick)
+    }, delay)
+    return () => {
+      window.clearTimeout(timer)
+      cancelAnimationFrame(raf)
+    }
+  }, [target, duration, delay])
+
+  return value
 }
 
-const HUB_CELL = { col: 2, row: 2 }
+function TypewriterHeading({ text, darkCount, speed = 35, delay = 400 }) {
+  const [count, setCount] = useState(0)
+  const [done, setDone] = useState(false)
 
-function gridCenter(col, row) {
-  return {
-    x: ((col - 0.5) / 3) * 100,
-    y: ((row - 0.5) / 3) * 100,
-  }
-}
-
-function IntegrationBoard() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0.25 })
-  const reduce = useReducedMotion()
-  const play = inView || reduce
-  const hub = gridCenter(HUB_CELL.col, HUB_CELL.row)
-
-  return (
-    <motion.div
-      className={`sx-int-board${play && !reduce ? ' is-syncing' : ''}`}
-      ref={ref}
-      initial={{ opacity: 0, scale: 0.92, y: 24 }}
-      animate={play ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.92, y: 24 }}
-      transition={{ duration: 0.85, ease: EASE }}
-    >
-      <svg className="sx-int-board-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        {BOARD_TILES.map((tile, i) => {
-          const target = gridCenter(tile.col, tile.row)
-          return (
-            <motion.line
-              key={tile.id}
-              x1={hub.x}
-              y1={hub.y}
-              x2={target.x}
-              y2={target.y}
-              className="sx-int-board-line"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={play ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
-              transition={{ duration: 0.65, delay: 0.2 + i * 0.07, ease: EASE }}
-            />
-          )
-        })}
-      </svg>
-
-      <div className="sx-int-tiles">
-        {BOARD_TILES.map((tile, i) => (
-          <motion.article
-            key={tile.id}
-            className={`sx-int-tile${tile.cardImage ? ' sx-int-tile--brand' : ''}`}
-            style={{
-              '--int-col': tile.col,
-              '--int-row': tile.row,
-              ...(tile.cardImage ? { backgroundImage: `url(${tile.cardImage})` } : null),
-            }}
-            aria-label={tile.name}
-            whileHover={{ scale: 1.07, zIndex: 3 }}
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={
-              play
-                ? {
-                    opacity: 1,
-                    y: reduce ? 0 : [0, -3, 0],
-                    scale: 1,
-                  }
-                : { opacity: 0, y: 20, scale: 0.9 }
-            }
-            transition={{
-              opacity: { duration: 0.5, delay: 0.28 + i * 0.08, ease: EASE },
-              y: reduce
-                ? { duration: 0.5, delay: 0.28 + i * 0.08, ease: EASE }
-                : {
-                    duration: 2.8 + (i % 3) * 0.4,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                    delay: 1.1 + i * 0.08,
-                  },
-              scale: { duration: 0.5, delay: 0.28 + i * 0.08, ease: [0.34, 1.45, 0.64, 1] },
-            }}
-          >
-            {!tile.cardImage && <IntegrationIcon name={tile.icon} size={32} />}
-            <span className="sx-int-tile-info" aria-hidden="true">
-              <strong>{tile.name}</strong>
-              <em>{tile.tag}</em>
-            </span>
-          </motion.article>
-        ))}
-
-        <motion.div
-          className="sx-int-hub"
-          style={{ '--int-col': HUB_CELL.col, '--int-row': HUB_CELL.row }}
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={
-            play
-              ? {
-                  opacity: 1,
-                  scale: 1,
-                  y: reduce ? 0 : [0, -6, 0],
-                }
-              : { opacity: 0, scale: 0.85 }
+  useEffect(() => {
+    let interval = 0
+    const timer = window.setTimeout(() => {
+      interval = window.setInterval(() => {
+        setCount((c) => {
+          if (c >= text.length) {
+            window.clearInterval(interval)
+            setDone(true)
+            return c
           }
-          transition={{
-            opacity: { duration: 0.7, delay: 0.15, ease: EASE },
-            scale: { duration: 0.7, delay: 0.15, ease: [0.34, 1.45, 0.64, 1] },
-            y: reduce
-              ? { duration: 0.7, delay: 0.15, ease: EASE }
-              : { duration: 3.6, repeat: Infinity, ease: 'easeInOut', delay: 0.9 },
-          }}
-        >
-          <motion.div
-            className="sx-int-hub-inner"
-            animate={
-              play && !reduce
-                ? {
-                    boxShadow: [
-                      '0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 48px rgba(0, 0, 0, 0.22)',
-                      '0 0 0 1px rgba(130, 195, 65, 0.35), 0 24px 56px rgba(130, 195, 65, 0.18)',
-                      '0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 48px rgba(0, 0, 0, 0.22)',
-                    ],
-                  }
-                : undefined
-            }
-            transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-          >
-            <img
-              src="/essixx-logo.png"
-              alt=""
-              width={40}
-              height={40}
-              loading="lazy"
-              decoding="async"
-              className="sx-int-hub-logo"
-              aria-hidden="true"
-              draggable={false}
-            />
-            <div className="sx-int-hub-meta">
-              <strong>Essixx Core</strong>
-              <span className="sx-int-hub-status">
-                <SyncPulse play={play} reduce={reduce} />
-                Live sync
-              </span>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-    </motion.div>
+          return c + 1
+        })
+      }, speed)
+    }, delay)
+    return () => {
+      window.clearTimeout(timer)
+      window.clearInterval(interval)
+    }
+  }, [text, speed, delay])
+
+  const typed = text.slice(0, count)
+  const dark = typed.slice(0, darkCount)
+  const light = typed.slice(darkCount)
+
+  return (
+    <h2 className="mk-heading" aria-label={text}>
+      <span className="mk-heading-dark">{dark}</span>
+      <span className="mk-heading-light">{light}</span>
+      {!done && <span className="mk-cursor-blink" aria-hidden="true" />}
+    </h2>
   )
 }
 
-function CategoryCard({ category }) {
+function BorderButton({ children, className = '', onClick, appear }) {
   return (
-    <div className="sx-int-category">
-      <div className="sx-int-category-icons">
-        {category.integrations.map((icon) => (
-          <span key={icon} className="sx-int-category-icon">
-            <IntegrationIcon name={icon} size={18} />
-          </span>
+    <div className={`mk-btn-border-wrap${appear ? ' is-appear' : ''}`}>
+      <button type="button" className={`mk-btn ${className}`} onClick={onClick}>
+        <span className="mk-btn-label">{children}</span>
+      </button>
+    </div>
+  )
+}
+
+function OrbitAvatar({ avatar }) {
+  const style = {
+    width: avatar.size,
+    height: avatar.size,
+    animationDelay: `${avatar.delay}s`,
+    '--orbit-deg': `${avatar.deg}deg`,
+    '--orbit-radius': `${avatar.radius}px`,
+  }
+
+  return (
+    <div
+      className={`mk-avatar mk-avatar--${avatar.shape} mk-avatar--${avatar.glow}`}
+      style={style}
+    >
+      <img src={avatar.src} alt={avatar.alt} width={avatar.size} height={avatar.size} />
+    </div>
+  )
+}
+
+function CirclesVisual() {
+  const count = useCountUp(40, 2000, 1200)
+
+  return (
+    <div className="mk-circles" aria-hidden="true">
+      <div className="mk-orbit mk-orbit--1">
+        <div className="mk-orbit-ring" />
+        <div className="mk-center">
+          <strong>
+            {count}
+            <span>+</span>
+          </strong>
+          <span>Live integrations</span>
+        </div>
+        {ORBIT_AVATARS.filter((a) => a.orbit === 1).map((a) => (
+          <OrbitAvatar key={`${a.alt}-${a.deg}`} avatar={a} />
         ))}
       </div>
-      <h3>{category.label}</h3>
-      <p>{category.desc}</p>
+      <div className="mk-orbit mk-orbit--2">
+        <div className="mk-orbit-ring" />
+        {ORBIT_AVATARS.filter((a) => a.orbit === 2).map((a) => (
+          <OrbitAvatar key={`${a.alt}-${a.deg}`} avatar={a} />
+        ))}
+      </div>
+      <div className="mk-orbit mk-orbit--3">
+        <div className="mk-orbit-ring" />
+        {ORBIT_AVATARS.filter((a) => a.orbit === 3).map((a) => (
+          <OrbitAvatar key={`${a.alt}-${a.deg}`} avatar={a} />
+        ))}
+      </div>
+      <div className="mk-orbit mk-orbit--4">
+        <div className="mk-orbit-ring" />
+        {ORBIT_AVATARS.filter((a) => a.orbit === 4).map((a) => (
+          <OrbitAvatar key={`${a.alt}-${a.deg}`} avatar={a} />
+        ))}
+      </div>
     </div>
   )
 }
 
 export default function IntegrationsSection() {
+  const [typedDone, setTypedDone] = useState(false)
+
+  useEffect(() => {
+    const ms = 400 + HEADING.length * 35 + 80
+    const t = window.setTimeout(() => setTypedDone(true), ms)
+    return () => window.clearTimeout(t)
+  }, [])
+
+  const scrollContact = () => {
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
-    <section id="integrations" className="sx-integrations">
-      <div className="sx-int-bg" aria-hidden="true">
-        <div className="sx-int-grid" />
-        <div className="sx-int-glow sx-int-glow--left" />
-        <div className="sx-int-glow sx-int-glow--right" />
-      </div>
-
-      <div className="sx-integrations-inner">
-        <div className="sx-int-layout">
-          <Reveal className="sx-int-copy-col" blur>
-            <span className="sx-int-badge">Integrations</span>
-            <h2 className="sx-int-title">
-              Plug into your
-              <br />
-              entire stack
-            </h2>
-            <p className="sx-int-lead">
-              Connect payment gateways, cloud backends, AI models, and data
-              services — unified in one system with real-time sync across every layer.
-            </p>
-
-            <ul className="sx-int-stats">
-              {STATS.map((stat) => (
-                <li key={stat.label}>
-                  <strong>{stat.value}</strong>
-                  <span>{stat.label}</span>
-                </li>
+    <section
+      id="integrations"
+      className="mk-section"
+      style={{ backgroundImage: `url("${BG}")` }}
+    >
+      <div className="mk-inner">
+        <header className="mk-header">
+          <div className="mk-header-left">
+            <span className="mk-badge">Integrations</span>
+            <nav className="mk-nav" aria-label="Integration categories">
+              {CATEGORIES.map((cat) => (
+                <a key={cat.id} href={`#integrations`} className="mk-nav-link">
+                  {cat.label}
+                </a>
               ))}
-            </ul>
-          </Reveal>
+            </nav>
+          </div>
+          <div className="mk-header-right">
+            {STATS.map((stat) => (
+              <div key={stat.label} className="mk-stat-chip">
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </header>
 
-          <Reveal delay={0.1} className="sx-int-visual-col" blur>
-            <IntegrationBoard />
-          </Reveal>
+        <div className="mk-hero">
+          <div className="mk-hero-left">
+            <TypewriterHeading text={HEADING} darkCount={HEADING_DARK_CHARS} />
+            <p className="mk-lead">{LEAD}</p>
+
+            <BorderButton
+              className="mk-btn--start"
+              appear={typedDone}
+              onClick={scrollContact}
+            >
+              Start Project
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M5 12h14M13 6l6 6-6 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </BorderButton>
+
+            <div className={`mk-pointer${typedDone ? ' is-visible' : ''}`}>
+              <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M4 2L20 11L11 13L9 22L4 2Z"
+                  fill="#A068FF"
+                  stroke="#fff"
+                  strokeWidth="1"
+                />
+              </svg>
+              <span>Essixx</span>
+            </div>
+          </div>
+
+          <div className="mk-hero-right">
+            <CirclesVisual />
+          </div>
         </div>
 
-        <div className="sx-int-categories">
-          {CATEGORIES.map((cat, i) => (
-            <Reveal key={cat.id} delay={0.08 + i * 0.1} y={24}>
-              <CategoryCard category={cat} />
-            </Reveal>
+        <div className="mk-cats">
+          {CATEGORIES.map((cat) => (
+            <article key={cat.id} className="mk-cat">
+              <h3>{cat.label}</h3>
+              <p>{cat.desc}</p>
+            </article>
           ))}
         </div>
       </div>

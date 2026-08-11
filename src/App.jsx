@@ -24,6 +24,10 @@ const AboutPage = lazy(() => import('./pages/AboutPage.jsx'))
 const CareersPage = lazy(() => import('./pages/CareersPage.jsx'))
 const PratikshaProfilePage = lazy(() => import('./pages/PratikshaProfilePage.jsx'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'))
+const SignupPage = lazy(() => import('./pages/AuthPages.jsx'))
+const LoginPage = lazy(() =>
+  import('./pages/AuthPages.jsx').then((m) => ({ default: m.LoginPage })),
+)
 
 // Hash URLs from UrbanCart stubs (/#/checkout?orderId=…) or old links
 // are rewritten to real path URLs before the router mounts.
@@ -219,6 +223,34 @@ function App() {
           <Route path="/checkout/" element={<CheckoutPage />} />
           <Route path="/payment/return" element={<PaymentReturnPage />} />
           <Route path="/payment/return/" element={<PaymentReturnPage />} />
+          <Route
+            path="/signup"
+            element={
+              <>
+                <Seo
+                  title="Sign up — Essixx"
+                  description="Create your Essixx profile to get started with freelance website and product development."
+                  path="/signup"
+                  robots="noindex, nofollow"
+                />
+                <SignupPage />
+              </>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <>
+                <Seo
+                  title="Log in — Essixx"
+                  description="Log in to your Essixx account."
+                  path="/login"
+                  robots="noindex, nofollow"
+                />
+                <LoginPage />
+              </>
+            }
+          />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>

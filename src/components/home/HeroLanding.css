@@ -90,6 +90,37 @@
   vertical-align: super;
 }
 
+.az-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.az-signin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #ffffff;
+  color: var(--text);
+  font-family: var(--az-inter);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.az-signin-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  background: #fafafa;
+}
+
 .az-menu-btn {
   appearance: none;
   border: none;
@@ -168,6 +199,24 @@
 }
 
 .az-drawer-links button:hover {
+  opacity: 0.55;
+}
+
+.az-drawer-auth {
+  margin-top: 12px;
+  font-family: var(--az-inter);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.az-drawer-auth--solid {
+  color: var(--text);
+}
+
+.az-drawer-auth:hover {
   opacity: 0.55;
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ChevronUp } from 'lucide-react'
 import { siteConfig } from '../../seo/siteConfig.js'
 import './HeroLanding.css'
@@ -112,16 +113,21 @@ export default function HeroLanding() {
             Essixx
             <sup>®</sup>
           </button>
-          <button
-            type="button"
-            className="az-menu-btn"
-            onClick={() => setMenuOpen(true)}
-            aria-expanded={menuOpen}
-            aria-controls="az-drawer"
-          >
-            Menu
-            <ChevronUp size={16} strokeWidth={2.25} aria-hidden="true" />
-          </button>
+          <div className="az-nav-actions">
+            <Link to="/login" className="az-signin-btn">
+              Sign in
+            </Link>
+            <button
+              type="button"
+              className="az-menu-btn"
+              onClick={() => setMenuOpen(true)}
+              aria-expanded={menuOpen}
+              aria-controls="az-drawer"
+            >
+              Menu
+              <ChevronUp size={16} strokeWidth={2.25} aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -146,6 +152,12 @@ export default function HeroLanding() {
               {link.label}
             </button>
           ))}
+          <a className="az-drawer-auth" href="/login">
+            Log in
+          </a>
+          <a className="az-drawer-auth az-drawer-auth--solid" href="/signup">
+            Sign up
+          </a>
         </nav>
         <p className="az-drawer-copy">
           © {new Date().getFullYear()} Essixx. All rights reserved.

@@ -86,6 +86,9 @@ export default function SynexNav() {
         </nav>
 
         <div className="sx-nav-actions">
+          <Link to="/login" className="sx-nav-ghost">
+            Sign in
+          </Link>
           <button type="button" className="sx-nav-ghost" onClick={() => go('contact')}>
             Request access
           </button>
@@ -132,6 +135,9 @@ export default function SynexNav() {
             </button>
           ),
         )}
+        <Link to="/login" className="sx-nav-mobile-launch" onClick={() => setOpen(false)}>
+          Sign in
+        </Link>
         <Link to="/launch" className="sx-nav-mobile-launch" onClick={() => setOpen(false)}>
           Launch app
         </Link>

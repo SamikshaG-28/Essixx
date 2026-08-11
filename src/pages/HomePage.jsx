@@ -1,23 +1,16 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Reveal } from '../components/home/Reveal.jsx'
 import HeroLanding from '../components/home/HeroLanding.jsx'
 import IntroSection from '../components/home/IntroSection.jsx'
 import BenefitsSection from '../components/home/BenefitsSection.jsx'
 import IntegrationsSection from '../components/home/IntegrationsSection.jsx'
 import ProjectsSection from '../components/home/ProjectsSection.jsx'
 import PricingSection from '../components/home/PricingSection.jsx'
+import PrecisionSection from '../components/home/PrecisionSection.jsx'
 import OurTeamSection from '../components/home/OurTeamSection.jsx'
 import FaqSection from '../components/home/FaqSection.jsx'
 import ContactFooter from '../components/home/ContactFooter.jsx'
 import './HomePage.css'
-
-const COMPARE_ROWS = [
-  'Multi-platform delivery',
-  'Real-time collaboration',
-  'AI-driven insights',
-  'Unified project dashboard',
-]
 
 const LIVE_ITEMS = [
   { title: 'Unified infrastructure', sub: '+ 2.4% performance impact' },
@@ -57,36 +50,7 @@ export default function HomePage() {
 
         <PricingSection />
 
-        <section className="sx-compare">
-          <div className="sx-compare-bg" aria-hidden="true" />
-          <Reveal>
-            <span className="sx-badge sx-badge--center sx-badge--light">Why Essixx</span>
-            <h2 className="sx-section-title sx-section-title--light">
-              Freelance quality.
-              <br />
-              Agency prices? Not here.
-            </h2>
-          </Reveal>
-          <Reveal className="sx-compare-table" delay={0.1}>
-            <div className="sx-compare-row sx-compare-head">
-              <span>Core capabilities</span>
-              <span className="sx-compare-brand">essixx</span>
-              <span>Other platform</span>
-            </div>
-            {COMPARE_ROWS.map((row) => (
-              <div key={row} className="sx-compare-row">
-                <span>{row}</span>
-                <span className="sx-compare-yes">✓</span>
-                <span className="sx-compare-no">Absent</span>
-              </div>
-            ))}
-            <div className="sx-compare-row sx-compare-foot">
-              <span>Total operational cost</span>
-              <span className="sx-compare-price">₹19,999 / project</span>
-              <span className="sx-compare-price-alt">₹1,70,000 / project</span>
-            </div>
-          </Reveal>
-        </section>
+        <PrecisionSection />
 
         <section className="sx-live">
           <span className="sx-live-label">Live system activity</span>

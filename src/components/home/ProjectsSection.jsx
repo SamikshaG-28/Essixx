@@ -1,9 +1,26 @@
-import { Reveal } from './Reveal.jsx'
+import { motion } from 'motion/react'
 import { PRODUCT_PROJECTS, CLIENT_PROJECTS } from '../../data/projects.js'
+import './ProjectsSection.css'
+
+const EASE = [0.22, 1, 0.36, 1]
+
+function FadeUp({ children, delay = 0, className = '' }) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.55, delay, ease: EASE }}
+    >
+      {children}
+    </motion.div>
+  )
+}
 
 function PlayStoreIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill="currentColor"
         d="M3.18 2.5c-.45.24-.68.66-.68 1.2v16.6c0 .54.23.96.68 1.2l10.2-9.5L3.18 2.5zm12.02 7.05L6.1 3.45l8.4 4.85.7 1.25zm1.05 1.55-1.35 1.35 1.35 1.35 4.55-2.55c.55-.3.55-1.05 0-1.35l-4.55-2.55-1.35 1.35 1.35 2.4zM6.1 20.55l8.4-5.75.7 1.25-9.1 4.5z"
@@ -14,7 +31,7 @@ function PlayStoreIcon() {
 
 function GitHubIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill="currentColor"
         d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1-2.7-.1-.2-.4-1.2.1-2.5 0 0 .8-.3 2.7 1 .8-.2 1.6-.3 2.4-.3s1.6.1 2.4.3c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.5.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.8v2.7c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"
@@ -37,27 +54,27 @@ function ExternalIcon() {
   )
 }
 
-function ProjectCard({ project, delay = 0 }) {
+function ProjectCard({ project, delay = 0, variant = 'product' }) {
   return (
-    <Reveal delay={delay} className="sx-proj-card">
-      <div className="sx-proj-card-top">
-        <span className="sx-proj-icon" style={{ background: project.gradient }} aria-hidden="true">
+    <FadeUp delay={delay} className={`pw-card pw-card--${variant}`}>
+      <div className="pw-card-glow" style={{ background: project.gradient }} aria-hidden="true" />
+
+      <div className="pw-card-top">
+        <span className="pw-icon" style={{ background: project.gradient }} aria-hidden="true">
           {project.icon}
         </span>
-        <span className={`sx-proj-status sx-proj-status--${project.status}`}>
-          {project.statusLabel}
-        </span>
+        <span className={`pw-status pw-status--${project.status}`}>{project.statusLabel}</span>
       </div>
 
       <h3>{project.name}</h3>
-      <p className="sx-proj-tagline">{project.tagline}</p>
-      <p className="sx-proj-desc">{project.description}</p>
-      <p className="sx-proj-credit">{project.credit}</p>
+      <p className="pw-tagline">{project.tagline}</p>
+      <p className="pw-desc">{project.description}</p>
+      <p className="pw-credit">{project.credit}</p>
 
-      <div className="sx-proj-actions">
+      <div className="pw-actions">
         {project.liveUrl && (
           <a
-            className="sx-proj-action"
+            className="pw-btn pw-btn--primary"
             href={project.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -67,7 +84,7 @@ function ProjectCard({ project, delay = 0 }) {
         )}
         {project.githubUrl && (
           <a
-            className="sx-proj-action sx-proj-action--ghost"
+            className="pw-btn pw-btn--ghost"
             href={project.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -78,7 +95,7 @@ function ProjectCard({ project, delay = 0 }) {
         )}
         {project.playStoreUrl && (
           <a
-            className="sx-proj-action sx-proj-action--play"
+            className="pw-btn pw-btn--play"
             href={project.playStoreUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -88,46 +105,74 @@ function ProjectCard({ project, delay = 0 }) {
           </a>
         )}
       </div>
-    </Reveal>
+    </FadeUp>
+  )
+}
+
+function SectionHeader({ badge, title, titleAccent, description, delay = 0 }) {
+  return (
+    <FadeUp delay={delay} className="pw-head">
+      <span className="pw-pill">
+        <span className="pw-pill-dot" />
+        {badge}
+      </span>
+      <h2>
+        {title}
+        {titleAccent ? (
+          <>
+            <br />
+            <span className="pw-title-accent">{titleAccent}</span>
+          </>
+        ) : null}
+      </h2>
+      <p>{description}</p>
+    </FadeUp>
   )
 }
 
 export default function ProjectsSection() {
   return (
     <>
-      <section id="projects" className="sx-proj">
-        <div className="sx-proj-inner">
-          <Reveal className="sx-proj-head">
-            <span className="sx-badge sx-badge--outline">Projects</span>
-            <h2>Products we built</h2>
-            <p>
-              Apps and tools developed by Kartik Sabale and Pratiksha Relekar — from free
-              UI kits to live Play Store apps.
-            </p>
-          </Reveal>
+      <section id="projects" className="pw-section">
+        <div className="pw-inner">
+          <SectionHeader
+            badge="Projects"
+            title="Products we built"
+            titleAccent="from kit to Play Store."
+            description="Apps and tools developed by Kartik Sabale and Pratiksha Relekar — from free UI kits to live Play Store apps."
+          />
 
-          <div className="sx-proj-grid">
+          <div className="pw-grid pw-grid--products">
             {PRODUCT_PROJECTS.map((project, i) => (
-              <ProjectCard key={project.id} project={project} delay={0.06 + i * 0.06} />
+              <ProjectCard
+                key={project.id}
+                project={project}
+                delay={0.06 + i * 0.06}
+                variant="product"
+              />
             ))}
           </div>
         </div>
       </section>
 
-      <section id="clients" className="sx-proj sx-proj--clients">
-        <div className="sx-proj-inner">
-          <Reveal className="sx-proj-head">
-            <span className="sx-badge sx-badge--outline">Client work</span>
-            <h2>Client projects</h2>
-            <p>
-              Websites and platforms built for clients by Kartik Sabale and Pratiksha
-              Relekar.
-            </p>
-          </Reveal>
+      <section id="clients" className="pw-section pw-section--clients">
+        <div className="pw-inner">
+          <SectionHeader
+            badge="Client work"
+            title="Client projects"
+            titleAccent="shipped for real businesses."
+            description="Websites and platforms built for clients by Kartik Sabale and Pratiksha Relekar."
+            delay={0.05}
+          />
 
-          <div className="sx-proj-grid sx-proj-grid--clients">
+          <div className="pw-grid pw-grid--clients">
             {CLIENT_PROJECTS.map((project, i) => (
-              <ProjectCard key={project.id} project={project} delay={0.06 + i * 0.06} />
+              <ProjectCard
+                key={project.id}
+                project={project}
+                delay={0.08 + i * 0.07}
+                variant="client"
+              />
             ))}
           </div>
         </div>
