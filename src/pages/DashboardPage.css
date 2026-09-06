@@ -1,0 +1,331 @@
+/* Account dashboard. Shares the site's dark surface language; the plan cards
+   echo the pricing section without importing its spotlight machinery, which
+   is decorative and heavy for a page people open to check a date. */
+
+.db-page {
+  min-height: 100vh;
+  padding: 120px 24px 96px;
+  background: #0a0a0a;
+  color: #fff;
+}
+
+.db-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.db-center { text-align: center; }
+
+.db-muted {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 6px 0 0;
+}
+
+/* --- signed out --------------------------------------------------------- */
+
+.db-signin {
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 36px 32px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.db-signin-icon { width: 26px; height: 26px; color: rgba(255, 255, 255, 0.5); }
+
+.db-signin-title {
+  margin: 14px 0 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.db-signin-lead {
+  margin: 10px 0 22px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.db-google-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 18px;
+  font: 500 14px/1 inherit;
+  color: #111;
+  background: #fff;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: opacity 0.18s ease;
+}
+
+.db-google-btn:hover:not(:disabled) { opacity: 0.9; }
+.db-google-btn:disabled { opacity: 0.6; cursor: default; }
+.db-google { width: 17px; height: 17px; }
+
+.db-error {
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  color: #ff8080;
+}
+
+.db-fineprint {
+  margin: 16px 0 0;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* --- header ------------------------------------------------------------- */
+
+.db-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.db-identity { display: flex; align-items: center; gap: 12px; }
+
+.db-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.db-avatar--blank { background: rgba(255, 255, 255, 0.1); }
+
+.db-name { font-size: 15px; font-weight: 600; }
+.db-email { font-size: 12.5px; color: rgba(255, 255, 255, 0.45); }
+
+.db-header-actions { display: flex; gap: 8px; }
+
+.db-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font: 500 12px/1 inherit;
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.18s ease, background 0.18s ease;
+}
+
+.db-ghost:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+
+/* --- sections ----------------------------------------------------------- */
+
+.db-section { margin-top: 40px; }
+
+.db-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.db-h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.db-plan-now {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #ffd27a;
+}
+
+/* --- plans -------------------------------------------------------------- */
+
+.db-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.db-plan {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.db-plan--featured { border-color: rgba(255, 210, 122, 0.35); }
+.db-plan--current { background: rgba(255, 210, 122, 0.06); }
+
+.db-plan-head { display: flex; align-items: center; gap: 8px; }
+.db-plan-name { font-size: 13px; font-weight: 600; }
+
+.db-plan-tag,
+.db-plan-badge {
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.db-plan-tag { background: rgba(255, 210, 122, 0.18); color: #ffd27a; }
+.db-plan-badge { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); }
+
+.db-plan-price {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.db-plan-period {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.db-plan-tagline {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.db-plan-features {
+  flex: 1;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.db-plan-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.db-plan-features svg { margin-top: 3px; flex: 0 0 auto; color: #ffd27a; }
+
+.db-plan-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 16px;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #111;
+  background: #ffd27a;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: opacity 0.18s ease;
+}
+
+.db-plan-cta:hover { opacity: 0.88; }
+
+/* --- downloads ---------------------------------------------------------- */
+
+.db-downloads {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.db-download {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.18s ease;
+}
+
+.db-download:hover:not(.is-soon) { background: rgba(255, 255, 255, 0.06); }
+.db-download.is-soon { opacity: 0.45; }
+.db-download span { display: flex; flex-direction: column; gap: 2px; }
+.db-download strong { font-size: 13.5px; font-weight: 600; }
+.db-download em { font-style: normal; font-size: 11.5px; color: rgba(255, 255, 255, 0.45); }
+
+/* --- receipts ----------------------------------------------------------- */
+
+.db-orders { margin: 14px 0 0; padding: 0; list-style: none; }
+
+.db-order {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.db-order-id {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.db-order-status { font-size: 11px; text-transform: capitalize; color: rgba(255, 255, 255, 0.5); }
+.db-order-status.is-paid { color: #6ee7a8; }
+.db-order-status.is-payment_failed { color: #ff8080; }
+.db-order-amount { font-weight: 600; }
+
+/* --- upcoming ----------------------------------------------------------- */
+
+.db-upcoming {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px 24px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.db-upcoming li { display: flex; flex-direction: column; gap: 2px; }
+.db-upcoming strong { font-size: 13px; font-weight: 600; }
+.db-upcoming span { font-size: 12px; color: rgba(255, 255, 255, 0.45); }
+
+.db-foot {
+  margin-top: 48px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.db-foot a { color: rgba(255, 255, 255, 0.7); }
+
+@media (max-width: 640px) {
+  .db-page { padding-top: 96px; }
+  .db-order { grid-template-columns: 1fr auto; }
+  .db-order-id { display: none; }
+}

@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import { PRODUCT_PROJECTS, CLIENT_PROJECTS } from '../../data/projects.js'
 import './ProjectsSection.css'
 

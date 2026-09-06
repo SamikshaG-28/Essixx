@@ -1,64 +1,20 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
+import { Check, X } from 'lucide-react'
 import { cn } from '../../lib/utils.js'
+import { PLANS, UPCOMING, formatPrice } from '../../data/plans.js'
 import './PricingSection.css'
 
 const EASE = [0.22, 1, 0.36, 1]
 
-const plans = [
-  {
-    name: 'Website',
-    price: '19,999',
-    originalPrice: '1,70,000',
-    description: 'One project. Freelancer rates. Modern, responsive, SEO-ready.',
-    bg: '#161616',
-    features: [
-      { text: 'Responsive business website', included: true },
-      { text: 'SEO-friendly pages', included: true },
-      { text: 'Contact & enquiry flows', included: true },
-      { text: 'Custom web app features', included: false },
-      { text: 'Mobile app (iOS / Android)', included: false },
-    ],
-  },
-  {
-    name: 'Website + Product',
-    price: '49,999',
-    originalPrice: '2,50,000',
-    description: 'Best for startups who need more than a brochure site.',
-    bg: '#252525',
-    features: [
-      { text: 'Responsive business website', included: true },
-      { text: 'SEO-friendly pages', included: true },
-      { text: 'Contact & enquiry flows', included: true },
-      { text: 'Custom web app features', included: true },
-      { text: 'Mobile app (iOS / Android)', included: true },
-    ],
-    featured: true,
-    badge: 'Best Value',
-  },
-]
+/* Surfaces per tier, kept here rather than in the data model: what a plan
+   costs is product information, what colour its card is, is not. */
+const CARD_BG = { free: '#161616', monthly: '#1e1e1e', yearly: '#252525' }
 
-function MIcon({
-  name,
-  size = 20,
-  weight = 400,
-  fill = 0,
-  grade = 0,
-  opticalSize = 24,
-  className,
-}) {
-  return (
-    <span
-      className={cn('material-symbols-outlined px-micon', className)}
-      style={{
-        fontSize: size,
-        fontVariationSettings: `'FILL' ${fill}, 'wght' ${weight}, 'GRAD' ${grade}, 'opsz' ${opticalSize}`,
-      }}
-    >
-      {name}
-    </span>
-  )
-}
+const plans = PLANS.map((plan) => ({ ...plan, bg: CARD_BG[plan.id] }))
+
+/* Icons come from lucide (already bundled) rather than the Material Symbols
+   webfont — two glyphs never justified a render-blocking font request. */
 
 function FadeUp({ children, delay = 0, className }) {
   return (
@@ -161,7 +117,6 @@ function SecondaryButton({ href, size = 'sm', children, onClick }) {
 }
 
 function PricingCard({ plan }) {
-  const contactHref = 'mailto:info@essixx.com?subject=Website%20development%20enquiry'
 
   return (
     <SpotlightBorder radius="2xl" size={460} intensity={0.5} className="px-card-shell">
@@ -175,26 +130,33 @@ function PricingCard({ plan }) {
 
         <FadeUp delay={0.1}>
           <div className="px-price-row">
-            <span className="px-price">₹{plan.price}</span>
-            {plan.originalPrice && (
-              <span className="px-price-old">₹{plan.originalPrice}</span>
-            )}
+            <span className="px-price">
+              {plan.price === 0 ? 'Free' : `₹${formatPrice(plan.price)}`}
+            </span>
+            {plan.period && <span className="px-price-old">{plan.period}</span>}
           </div>
         </FadeUp>
 
         <FadeUp delay={0.2}>
-          <p className="px-desc">{plan.description}</p>
+          <p className="px-desc">
+            <strong className="px-desc-lead">{plan.tagline}</strong>{' '}
+            {plan.description}
+          </p>
         </FadeUp>
 
         <FadeUp delay={0.3}>
           <div className="px-cta">
-            {plan.featured ? (
-              <PrimaryButton href={contactHref} size="sm">
-                Get Started
+            {plan.id === 'free' ? (
+              <SecondaryButton href="#download" size="sm">
+                Download Essy
+              </SecondaryButton>
+            ) : plan.featured ? (
+              <PrimaryButton href={`#/checkout?plan=${plan.id}`} size="sm">
+                Get {plan.name}
               </PrimaryButton>
             ) : (
-              <SecondaryButton href={contactHref} size="sm">
-                Get Started
+              <SecondaryButton href={`#/checkout?plan=${plan.id}`} size="sm">
+                Get {plan.name}
               </SecondaryButton>
             )}
           </div>
@@ -213,9 +175,9 @@ function PricingCard({ plan }) {
               >
                 <span className={cn('px-feature-icon', f.included ? 'is-on' : 'is-off')}>
                   {f.included ? (
-                    <MIcon name="check" size={12} className="px-icon-on" />
+                    <Check size={12} strokeWidth={2.75} className="px-icon-on" aria-hidden="true" />
                   ) : (
-                    <MIcon name="close" size={12} className="px-icon-off" />
+                    <X size={12} strokeWidth={2.75} className="px-icon-off" aria-hidden="true" />
                   )}
                 </span>
                 {f.text}
@@ -242,24 +204,43 @@ export default function PricingSection() {
             </FadeUp>
             <FadeUp delay={0.1}>
               <h2 className="px-title">
-                Clear pricing plans
-                <br className="px-title-break" /> that scale with you.
+                One price.
+                <br className="px-title-break" /> No credits, no limits.
               </h2>
             </FadeUp>
           </div>
           <FadeUp delay={0.2}>
             <p className="px-lead">
-              Freelancer rates. Clear scope. Pick the plan that fits how far you want
-              to go — website development starts from ₹19,999 only.
+              Essy runs on your own machine, so usage costs us nothing and you
+              are never metered. Transcribe and caption as much as you like on
+              the free tier; pay only to export clean and unlock what is coming.
             </p>
           </FadeUp>
         </div>
 
         <div className="px-grid">
           {plans.map((p) => (
-            <PricingCard key={p.name} plan={p} />
+            <PricingCard key={p.id} plan={p} />
           ))}
         </div>
+
+        {/* Named as unbuilt on purpose: a paid plan should be bought for what
+            it does today, with the roadmap as the reason to stay. */}
+        <FadeUp delay={0.2}>
+          <div className="px-upcoming">
+            <div className="px-upcoming-head">
+              Included as they land — none of these are built yet
+            </div>
+            <ul className="px-upcoming-grid">
+              {UPCOMING.map(([name, line]) => (
+                <li key={name} className="px-upcoming-item">
+                  <span className="px-upcoming-name">{name}</span>
+                  <span className="px-upcoming-line">{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </FadeUp>
       </div>
       {/* keep old #hire deep links working */}
       <div id="hire" className="px-hire-anchor" aria-hidden="true" />

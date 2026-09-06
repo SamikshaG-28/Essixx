@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronUp } from 'lucide-react'
 import { siteConfig } from '../../seo/siteConfig.js'
+import EssixxMark from '../brand/EssixxMark.jsx'
 import './HeroLanding.css'
 
 const TICKER_ITEMS = [
@@ -20,24 +21,24 @@ const DRAWER_LINKS = [
   { label: 'Get in Touch', target: 'contact' },
 ]
 
-const TRUSTED_LOGOS = [
-  { name: 'Airbnb', style: { fontFamily: '"Cedarville Cursive", cursive', fontWeight: 700 } },
-  { name: 'Shopify', style: { fontFamily: 'system-ui, sans-serif', fontWeight: 800 } },
-  { name: 'Notion', style: { fontFamily: 'Georgia, serif', fontWeight: 500 } },
-  { name: 'Linear', style: { fontFamily: 'Inter, sans-serif', fontWeight: 600 } },
-  { name: 'Webflow', style: { fontFamily: 'Inter, sans-serif', fontWeight: 700 } },
+// The platforms Essixx builds on. Kept as a capability signal, not a client
+// list — naming companies we haven't worked with would be a false trust claim.
+const STACK_LOGOS = [
+  { name: 'React', style: { fontFamily: 'Inter, sans-serif', fontWeight: 600 } },
+  { name: 'Next.js', style: { fontFamily: 'system-ui, sans-serif', fontWeight: 800 } },
   { name: 'Figma', style: { fontFamily: 'system-ui, sans-serif', fontWeight: 600 } },
-  { name: 'Slack', style: { fontFamily: 'Georgia, serif', fontWeight: 700 } },
   { name: 'Stripe', style: { fontFamily: 'system-ui, sans-serif', fontWeight: 800 } },
+  { name: 'Razorpay', style: { fontFamily: 'Inter, sans-serif', fontWeight: 700 } },
+  { name: 'Firebase', style: { fontFamily: 'Inter, sans-serif', fontWeight: 600 } },
+  { name: 'Supabase', style: { fontFamily: 'Inter, sans-serif', fontWeight: 600 } },
   { name: 'Vercel', style: { fontFamily: 'Inter, sans-serif', fontWeight: 600 } },
+  { name: 'Webflow', style: { fontFamily: 'Inter, sans-serif', fontWeight: 700 } },
   { name: 'Framer', style: { fontFamily: '"Source Serif 4", serif', fontWeight: 600 } },
 ]
 
-const HERO_BG =
-  'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260626_041422_4a459e05-abce-4150-9fb7-4ededc423cd1.png&w=1280&q=85'
-
-const AVATAR_URL =
-  'https://framerusercontent.com/images/hfneFL6CHBi5BnNvCeOaqU9HqE4.png'
+// Self-hosted: the hero backdrop is the LCP element, so it must not depend on
+// a third-party CDN handshake.
+const HERO_BG = '/hero-aurora.webp'
 
 function scrollTo(id) {
   const el = document.getElementById(id)
@@ -90,8 +91,21 @@ function MarqueeRow({ items, className = '', renderItem }) {
   )
 }
 
+function BrandLogo({ onClick, animate = false }) {
+  return (
+    <button type="button" className="az-logo ex-mark-host" onClick={onClick}>
+      <EssixxMark size={22} interactive animate={animate} title="Essixx" />
+      <span className="az-logo-word">
+        Essixx
+        <sup>®</sup>
+      </span>
+    </button>
+  )
+}
+
 export default function HeroLanding() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [condensed, setCondensed] = useState(false)
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -100,6 +114,15 @@ export default function HeroLanding() {
     }
   }, [menuOpen])
 
+  // The nav floats over both the light hero and the dark sections below, so it
+  // earns a backdrop as soon as it stops sitting on the hero.
+  useEffect(() => {
+    const onScroll = () => setCondensed(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   const go = (target) => {
     setMenuOpen(false)
     window.setTimeout(() => scrollTo(target), 80)
@@ -107,12 +130,9 @@ export default function HeroLanding() {
 
   return (
     <div className="az-landing">
-      <header className="az-nav">
+      <header className={`az-nav${condensed ? ' is-condensed' : ''}`}>
         <div className="az-nav-inner">
-          <button type="button" className="az-logo" onClick={() => scrollTo('home')}>
-            Essixx
-            <sup>®</sup>
-          </button>
+          <BrandLogo animate onClick={() => scrollTo('home')} />
           <div className="az-nav-actions">
             <Link to="/login" className="az-signin-btn">
               Sign in
@@ -137,10 +157,7 @@ export default function HeroLanding() {
         aria-hidden={!menuOpen}
       >
         <div className="az-drawer-top">
-          <button type="button" className="az-logo" onClick={() => go('home')}>
-            Essixx
-            <sup>®</sup>
-          </button>
+          <BrandLogo onClick={() => go('home')} />
           <button type="button" className="az-menu-btn" onClick={() => setMenuOpen(false)}>
             Close
             <ChevronUp size={16} strokeWidth={2.25} aria-hidden="true" />
@@ -192,8 +209,8 @@ export default function HeroLanding() {
           </h1>
 
           <p className="az-subtitle">
-            A flexible design partnership for founders, brands, and agencies who want
-            top craft delivered on their timeline.
+            A Pune-based web development and design studio for founders, brands, and
+            agencies — websites, apps, and brand systems delivered on your timeline.
           </p>
 
           <div className="az-cta-row">
@@ -204,7 +221,14 @@ export default function HeroLanding() {
               className="az-btn-book"
               href={`mailto:${siteConfig.email}?subject=${encodeURIComponent('Chat for 15 minutes')}`}
             >
-              <img src={AVATAR_URL} alt="" width={40} height={40} />
+              <img
+                src="/team/kartik-sabale.webp"
+                alt="Kartik Sabale, founder at Essixx"
+                width={40}
+                height={40}
+                loading="eager"
+                decoding="async"
+              />
               <span className="az-btn-book-text">
                 <strong>Chat for 15 minutes</strong>
                 <span className="az-btn-book-sub">
@@ -219,12 +243,12 @@ export default function HeroLanding() {
         <div className="az-hero-blur" aria-hidden="true" />
       </section>
 
-      <section className="az-trusted" aria-label="Trusted partners">
+      <section className="az-trusted" aria-label="Technologies we build with">
         <div className="az-trusted-inner">
-          <p className="az-trusted-label">Partnered with top-tier companies globally</p>
+          <p className="az-trusted-label">Technologies we build with</p>
           <MarqueeRow
             className="az-trusted-marquee"
-            items={TRUSTED_LOGOS}
+            items={STACK_LOGOS}
             renderItem={(logo, i) => (
               <span key={`${logo.name}-${i}`} className="az-trusted-logo" style={logo.style}>
                 {logo.name}

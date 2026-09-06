@@ -9,7 +9,6 @@ export default function Seo({
   ogImageAlt = siteConfig.ogImageAlt,
   ogType = 'website',
   locale = siteConfig.locale,
-  themeColor = siteConfig.themeColor,
   robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
   jsonLd = [],
 }) {
@@ -31,7 +30,7 @@ export default function Seo({
       <meta name="author" content={name} />
       <meta name="robots" content={robots} />
       <meta name="googlebot" content={robots} />
-      <meta name="theme-color" content={themeColor} />
+      {/* theme-color is site-wide and light/dark-scoped — it lives in index.html */}
       <meta name="format-detection" content="telephone=yes" />
       <meta name="geo.region" content="IN-MH" />
       <meta name="geo.placename" content="Pune" />
@@ -49,8 +48,8 @@ export default function Seo({
       <meta property="og:image" content={ogImage} />
       <meta property="og:image:secure_url" content={ogImage} />
       <meta property="og:image:alt" content={ogImageAlt} />
-      <meta property="og:image:width" content="1024" />
-      <meta property="og:image:height" content="576" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
@@ -58,10 +57,10 @@ export default function Seo({
       <meta name="twitter:image" content={ogImage} />
       <meta name="twitter:image:alt" content={ogImageAlt} />
 
-      <link rel="manifest" href="/site.webmanifest" />
+      {/* manifest + icons are site-wide and declared once in index.html */}
 
       <meta name="contact" content={email} />
-      <meta name="telephone" content={phoneDisplay} />
+      {phoneDisplay ? <meta name="telephone" content={phoneDisplay} /> : null}
 
       {jsonLdBlocks.filter(Boolean).map((item, index) => (
         <script

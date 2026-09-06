@@ -1,6 +1,9 @@
-import { motion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { siteConfig } from '../../seo/siteConfig.js'
+import { prefersReducedMotion } from '../../lib/utils.js'
+import EssixxMark from '../brand/EssixxMark.jsx'
 import './ContactFooter.css'
 
 function LinkedinIcon({ className }) {
@@ -54,17 +57,7 @@ const COMPANY_LINKS = [
 ]
 
 function LogoIcon() {
-  return (
-    <div className="ft-logo-icon" aria-hidden="true">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M4 20C4 20 4 14 10 10C16 6 20 4 20 4C20 4 18 8 14 14C10 20 4 20 4 20Z"
-          fill="white"
-        />
-        <path d="M4 20L10 14" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    </div>
-  )
+  return <EssixxMark className="ft-logo-icon" size={34} tile interactive title="Essixx" />
 }
 
 function FooterLink({ to, children }) {
@@ -89,7 +82,7 @@ function FooterCard() {
         <div className="ft-card-inner">
           <div className="ft-grid">
             <div className="ft-brand">
-              <div className="ft-brand-row">
+              <div className="ft-brand-row ex-mark-host">
                 <LogoIcon />
                 <span className="ft-brand-name">Essixx</span>
               </div>
@@ -165,6 +158,37 @@ function FooterCard() {
   )
 }
 
+/**
+ * Brand signature above the footer: the monogram extrudes into depth as it
+ * scrolls into view, then settles. Runs once — it's punctuation, not a loop.
+ */
+function SignatureMark() {
+  const ref = useRef(null)
+  const [deep, setDeep] = useState(prefersReducedMotion)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el || prefersReducedMotion()) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setDeep(true)
+          io.disconnect()
+        }
+      },
+      { threshold: 0.4 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  return (
+    <div ref={ref} className={`ft-signature${deep ? ' is-deep' : ''}`}>
+      <EssixxMark size={132} extrude interactive={false} title="Essixx monogram" />
+    </div>
+  )
+}
+
 function GlassText() {
   return (
     <div className="ft-glass">
@@ -229,6 +253,7 @@ function GlassText() {
 export default function ContactFooter() {
   return (
     <footer id="contact" className="ft-section">
+      <SignatureMark />
       <FooterCard />
       <GlassText />
     </footer>

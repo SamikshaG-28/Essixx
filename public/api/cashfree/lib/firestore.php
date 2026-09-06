@@ -81,7 +81,7 @@ function google_access_token(): string
 
 function firestore_project_id(): string
 {
-    return env_value('FIREBASE_PROJECT_ID', 'urbancart-cc45c') ?? 'urbancart-cc45c';
+    return env_value('FIREBASE_PROJECT_ID', 'essy-bbd67') ?? 'essy-bbd67';
 }
 
 function firestore_document_path(string $collection, string $docId): string

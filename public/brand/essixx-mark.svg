@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="170 160 262 280" width="262" height="280" role="img" aria-label="Essixx">
+  <title>Essixx</title>
+  <g fill="#0B0E15">
+    <rect x="170" y="160" width="72" height="280" rx="22"/>
+    <rect x="256" y="160" width="176" height="72" rx="22"/>
+    <rect x="256" y="264" width="176" height="72" rx="22"/>
+    <rect x="256" y="368" width="176" height="72" rx="22"/>
+  </g>
+</svg>

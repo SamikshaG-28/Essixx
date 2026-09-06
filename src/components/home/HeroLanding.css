@@ -55,7 +55,30 @@
   pointer-events: none;
 }
 
+/* Backdrop only once the nav leaves the hero — it has to stay legible over
+   the dark sections further down the page. */
+.az-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Opacity carries the legibility on its own — backdrop-filter is treated as
+     a refinement, not a requirement. */
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(11, 14, 21, 0.07);
+  box-shadow: 0 1px 24px rgba(11, 14, 21, 0.05);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.az-nav.is-condensed::before {
+  opacity: 1;
+}
+
 .az-nav-inner {
+  position: relative;
   max-width: 1200px;
   margin: 0 auto;
   padding: 19px 36px;
@@ -63,6 +86,12 @@
   align-items: center;
   justify-content: space-between;
   pointer-events: auto;
+  transition: padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.az-nav.is-condensed .az-nav-inner {
+  padding-top: 13px;
+  padding-bottom: 13px;
 }
 
 .az-logo {
@@ -71,12 +100,28 @@
   background: transparent;
   padding: 0;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  line-height: 1;
+}
+
+.az-logo .ex-mark {
+  flex: none;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.az-logo:hover .ex-mark {
+  transform: translate(-1.6px, -1.6px);
+}
+
+.az-logo-word {
   font-family: var(--az-serif);
   font-size: 30px;
   font-weight: 600;
   font-style: italic;
   letter-spacing: -0.08em;
-  color: var(--text);
   line-height: 1;
 }
 

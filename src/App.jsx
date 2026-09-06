@@ -24,6 +24,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage.jsx'))
 const CareersPage = lazy(() => import('./pages/CareersPage.jsx'))
 const PratikshaProfilePage = lazy(() => import('./pages/PratikshaProfilePage.jsx'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'))
+const DashboardPage = lazy(() => import('./pages/DashboardPage.jsx'))
 const SignupPage = lazy(() => import('./pages/AuthPages.jsx'))
 const LoginPage = lazy(() =>
   import('./pages/AuthPages.jsx').then((m) => ({ default: m.LoginPage })),
@@ -219,6 +220,10 @@ function App() {
             </>
           }
         />
+          {/* The dashboard carries its own <Seo>, since it renders two very
+              different states and only one of them is a page worth titling. */}
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard/" element={<DashboardPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/checkout/" element={<CheckoutPage />} />
           <Route path="/payment/return" element={<PaymentReturnPage />} />

@@ -25,17 +25,40 @@ const FOOTER_LINKS = [
   ['Terms & Conditions', 'Privacy Policy'],
 ]
 
+const INTRO_POSTER = '/about-hero.webp'
+
+/**
+ * The intro reel is optional: /videos/intro/* is not shipped in every
+ * deployment. When a clip is missing the element used to render as a large
+ * empty panel, so a failed load now falls back to the poster still.
+ */
 function IntroVideo() {
   const videoRef = useRef(null)
   const [videoIndex, setVideoIndex] = useState(0)
+  const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!video || failed) return
 
     video.load()
     video.play().catch(() => {})
-  }, [videoIndex])
+  }, [videoIndex, failed])
+
+  if (failed) {
+    return (
+      <div className="about-video-shell">
+        <img
+          className="about-video"
+          src={INTRO_POSTER}
+          alt="Essixx studio — designing and building digital products"
+          width={1200}
+          height={800}
+          decoding="async"
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="about-video-shell">
@@ -44,10 +67,12 @@ function IntroVideo() {
         key={INTRO_VIDEOS[videoIndex]}
         className="about-video"
         src={INTRO_VIDEOS[videoIndex]}
+        poster={INTRO_POSTER}
         autoPlay
         muted
         playsInline
         preload="auto"
+        onError={() => setFailed(true)}
         onEnded={() => setVideoIndex((current) => (current + 1) % INTRO_VIDEOS.length)}
       />
     </div>

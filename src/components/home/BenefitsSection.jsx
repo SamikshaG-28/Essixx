@@ -1,7 +1,7 @@
 import './BenefitsSection.css'
 
 const VIDEO_SRC =
-  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260421_072701_f6a01abb-eb30-4559-9d6e-774362defbc3.mp4'
+  '/video/benefits.mp4'
 
 export default function BenefitsSection() {
   return (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import EssixxMark from '../brand/EssixxMark.jsx'
 
 export const NAV_ITEMS = [
   { label: 'About', href: '/about' },
@@ -57,8 +58,9 @@ export default function SynexNav() {
   return (
     <header className={`sx-nav sx-nav--light ${scrolled ? 'is-scrolled' : ''}`}>
       <div className="sx-nav-inner">
-        <button type="button" className="sx-logo" onClick={goHome}>
-          essixx
+        <button type="button" className="sx-logo ex-mark-host" onClick={goHome}>
+          <EssixxMark size={18} interactive title="Essixx" />
+          <span>essixx</span>
         </button>
 
         <nav className="sx-nav-links" aria-label="Primary">
@@ -86,7 +88,7 @@ export default function SynexNav() {
         </nav>
 
         <div className="sx-nav-actions">
-          <Link to="/login" className="sx-nav-ghost">
+          <Link to="/dashboard" className="sx-nav-ghost">
             Sign in
           </Link>
           <button type="button" className="sx-nav-ghost" onClick={() => go('contact')}>
@@ -135,7 +137,7 @@ export default function SynexNav() {
             </button>
           ),
         )}
-        <Link to="/login" className="sx-nav-mobile-launch" onClick={() => setOpen(false)}>
+        <Link to="/dashboard" className="sx-nav-mobile-launch" onClick={() => setOpen(false)}>
           Sign in
         </Link>
         <Link to="/launch" className="sx-nav-mobile-launch" onClick={() => setOpen(false)}>

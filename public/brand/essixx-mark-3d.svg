@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="150 140 340 350" width="340" height="350" role="img" aria-label="Essixx">
+  <title>Essixx</title>
+  <defs>
+    <g id="ex-bars">
+      <rect x="170" y="160" width="72" height="280" rx="22"/>
+      <rect x="256" y="160" width="176" height="72" rx="22"/>
+      <rect x="256" y="264" width="176" height="72" rx="22"/>
+      <rect x="256" y="368" width="176" height="72" rx="22"/>
+    </g>
+  </defs>
+  <g fill="#9E9E9E">
+    <use href="#ex-bars" transform="translate(44.8 44.8)"/>
+    <use href="#ex-bars" transform="translate(41.6 41.6)"/>
+    <use href="#ex-bars" transform="translate(38.4 38.4)"/>
+    <use href="#ex-bars" transform="translate(35.2 35.2)"/>
+    <use href="#ex-bars" transform="translate(32 32)"/>
+    <use href="#ex-bars" transform="translate(28.8 28.8)"/>
+    <use href="#ex-bars" transform="translate(25.6 25.6)"/>
+    <use href="#ex-bars" transform="translate(22.4 22.4)"/>
+    <use href="#ex-bars" transform="translate(19.2 19.2)"/>
+    <use href="#ex-bars" transform="translate(16 16)"/>
+    <use href="#ex-bars" transform="translate(12.8 12.8)"/>
+    <use href="#ex-bars" transform="translate(9.6 9.6)"/>
+    <use href="#ex-bars" transform="translate(6.4 6.4)"/>
+    <use href="#ex-bars" transform="translate(3.2 3.2)"/>
+  </g>
+  <g fill="#0B0E15">
+    <use href="#ex-bars"/>
+  </g>
+</svg>

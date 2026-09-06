@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { doc, getDoc } from 'firebase/firestore'
 import { useLocation } from 'react-router-dom'
-import { db } from '../lib/firebase.js'
+import { loadFirestore } from '../lib/firestore.js'
 import { cashfreeModeFromOrder, openCashfreeCheckout } from '../lib/cashfreeCheckout.js'
 import { isPayableStatus, orderFailureUrl, orderSuccessUrl } from '../lib/orderPayment.js'
 import { checkoutHintsFromQuery, isUrbanCartSource } from '../lib/urbanCartStores.js'
@@ -76,6 +75,7 @@ export default function CheckoutPage() {
           throw new Error('Missing orderId in URL. UrbanCart must redirect with ?orderId=...')
         }
 
+        const { db, doc, getDoc } = await loadFirestore()
         const snap = await getDoc(doc(db, 'orders', orderId))
         if (!snap.exists()) {
           throw new Error('Order not found in Firestore')

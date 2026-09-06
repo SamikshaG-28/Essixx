@@ -14,8 +14,11 @@ export const siteConfig = {
   locale: 'en_IN',
   language: 'en',
   email: 'support@essixx.com',
-  phone: '+919000000000',
-  phoneDisplay: '+91 90000 00000',
+  // NAP data is a ranking signal for local search — a placeholder number is
+  // worse than none, so telephone is omitted from schema until it is real.
+  // Set VITE_SITE_PHONE (E.164, e.g. +919812345678) to publish it.
+  phone: import.meta.env.VITE_SITE_PHONE || '',
+  phoneDisplay: import.meta.env.VITE_SITE_PHONE_DISPLAY || '',
   address: {
     streetAddress: 'Navale Bridge',
     addressLocality: 'Pune',
@@ -46,8 +49,8 @@ export const siteConfig = {
   ],
   ogImage: `${SITE_URL}/og-image.png`,
   ogImageAlt:
-    'Essixx — Professional website development for Pune businesses. Special offer from ₹19,999.',
-  themeColor: '#82c341',
+    'Essixx — premium creative and engineering, on demand. Web, apps and brand systems from Pune, India.',
+  themeColor: '#0B0E15',
   foundingDate: '2014',
   priceRange: '₹₹',
   services: [
@@ -211,6 +214,9 @@ export function buildJsonLd() {
     addressCountry: address.addressCountry,
   }
 
+  // Emitting an empty telephone is a structured-data error; omit the key instead.
+  const tel = (value) => (value ? { telephone: value } : {})
+
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -230,7 +236,7 @@ export function buildJsonLd() {
         description,
         slogan: tagline,
         email,
-        telephone: phoneDisplay,
+        ...tel(phoneDisplay),
         foundingDate,
         sameAs: Object.values(social).filter(Boolean),
         address: addressBlock,
@@ -238,7 +244,7 @@ export function buildJsonLd() {
           '@type': 'ContactPoint',
           contactType: 'customer support',
           email,
-          telephone: phone,
+          ...tel(phone),
           areaServed: 'IN',
           availableLanguage: ['en', 'hi', 'mr'],
         },
@@ -267,7 +273,7 @@ export function buildJsonLd() {
         name: `${name} — Digital Studio`,
         image: ogImage,
         url,
-        telephone: phone,
+        ...tel(phone),
         email,
         priceRange,
         address: addressBlock,

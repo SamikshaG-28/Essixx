@@ -33,7 +33,7 @@ const PILLARS = [
 ]
 
 const SECTION_BG =
-  'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260418_125638_553b96dc-a1fd-4b2b-81a9-ed7daa80006e.png&w=1280&q=85'
+  '/precision-aurora.webp'
 
 export default function PrecisionSection() {
   return (

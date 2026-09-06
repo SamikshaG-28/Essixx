@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { prefersReducedMotion } from '../../lib/utils.js'
 import './IntegrationsSection.css'
 
-const BG =
-  'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260624_111401_56af5012-2263-45d3-849a-8688084d7c2a.png&w=1280&q=85'
+const BG = '/integrations-aurora.webp'
 
 const HEADING = 'Plug into your entire stack'
 const HEADING_DARK_CHARS = 15 // "Plug into your "
@@ -140,15 +140,23 @@ function easeOutCubic(t) {
   return 1 - (1 - t) ** 3
 }
 
-function useCountUp(target, duration = 2000, delay = 1200) {
-  const [value, setValue] = useState(0)
-  const started = useRef(false)
+/**
+ * Counts up once, the first time the element scrolls into view — the section
+ * sits several screens below the fold, so a mount-timed count would always be
+ * finished (or, under StrictMode's double-effect, never start) before anyone
+ * sees it. Returns [ref, value].
+ */
+function useCountUp(target, duration = 2000, delay = 200) {
+  const [value, setValue] = useState(() => (prefersReducedMotion() ? target : 0))
+  const ref = useRef(null)
 
   useEffect(() => {
-    if (started.current) return undefined
-    started.current = true
+    const el = ref.current
+    if (!el || prefersReducedMotion()) return undefined
+
     let raf = 0
-    const timer = window.setTimeout(() => {
+    let timer = 0
+    const run = () => {
       const start = performance.now()
       const tick = (now) => {
         const t = Math.min(1, (now - start) / duration)
@@ -156,14 +164,26 @@ function useCountUp(target, duration = 2000, delay = 1200) {
         if (t < 1) raf = requestAnimationFrame(tick)
       }
       raf = requestAnimationFrame(tick)
-    }, delay)
+    }
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        io.disconnect()
+        timer = window.setTimeout(run, delay)
+      },
+      { threshold: 0.35 },
+    )
+    io.observe(el)
+
     return () => {
+      io.disconnect()
       window.clearTimeout(timer)
       cancelAnimationFrame(raf)
     }
   }, [target, duration, delay])
 
-  return value
+  return [ref, value]
 }
 
 function TypewriterHeading({ text, darkCount, speed = 35, delay = 400 }) {
@@ -233,13 +253,13 @@ function OrbitAvatar({ avatar }) {
 }
 
 function CirclesVisual() {
-  const count = useCountUp(40, 2000, 1200)
+  const [countRef, count] = useCountUp(40, 2000)
 
   return (
     <div className="mk-circles" aria-hidden="true">
       <div className="mk-orbit mk-orbit--1">
         <div className="mk-orbit-ring" />
-        <div className="mk-center">
+        <div className="mk-center" ref={countRef}>
           <strong>
             {count}
             <span>+</span>

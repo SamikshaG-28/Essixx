@@ -1,5 +1,4 @@
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
-import { db } from './firebase.js'
+import { loadFirestore } from './firestore.js'
 import {
   buildUrbanCartReturnPath,
   resolveUrbanCartOrigin,
@@ -55,8 +54,11 @@ export function sleep(ms) {
 }
 
 export async function pollOrderUntilPaid(orderId, maxAttempts = 15, intervalMs = 2000) {
+  const { db, doc, getDoc } = await loadFirestore()
+  const read = () => getDoc(doc(db, 'orders', orderId))
+
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    const snap = await getDoc(doc(db, 'orders', orderId))
+    const snap = await read()
     if (snap.exists() && snap.data().status === 'paid') {
       return { paid: true, order: snap.data() }
     }
@@ -65,7 +67,7 @@ export async function pollOrderUntilPaid(orderId, maxAttempts = 15, intervalMs =
     }
   }
 
-  const snap = await getDoc(doc(db, 'orders', orderId))
+  const snap = await read()
   return {
     paid: snap.exists() && snap.data().status === 'paid',
     order: snap.exists() ? snap.data() : null,
@@ -73,6 +75,7 @@ export async function pollOrderUntilPaid(orderId, maxAttempts = 15, intervalMs =
 }
 
 export async function markOrderPaid(orderId, extra = {}) {
+  const { db, doc, updateDoc, serverTimestamp } = await loadFirestore()
   await updateDoc(doc(db, 'orders', orderId), {
     status: 'paid',
     cashfreePaymentStatus: 'SUCCESS',
@@ -84,6 +87,7 @@ export async function markOrderPaid(orderId, extra = {}) {
 }
 
 export async function markOrderFailed(orderId, extra = {}) {
+  const { db, doc, updateDoc, serverTimestamp } = await loadFirestore()
   await updateDoc(doc(db, 'orders', orderId), {
     status: 'payment_failed',
     cashfreePaymentStatus: extra.cashfreePaymentStatus || 'FAILED',

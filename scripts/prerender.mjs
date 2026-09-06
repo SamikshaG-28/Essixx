@@ -5,7 +5,7 @@
  *
  * Usage: npm run build && node scripts/prerender.mjs
  */
-import { mkdir, writeFile, access } from 'node:fs/promises'
+import { mkdir, writeFile, access, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { preview } from 'vite'
@@ -40,7 +40,10 @@ function dedupeHead(html) {
     }
     const name = tag.match(/(?:name|property)="([^"]+)"/)?.[1] || ''
     // viewport/charset style tags appear once anyway; skip dedupe for empty keys
-    return name ? `meta:${name}` : null
+    if (!name) return null
+    // Media-scoped metas (light/dark theme-color) are siblings, not duplicates.
+    const media = tag.match(/media="([^"]+)"/)?.[1]
+    return media ? `meta:${name}:${media}` : `meta:${name}`
   }
 
   const matches = [...head.matchAll(tagRe)].map((m) => ({
@@ -70,6 +73,23 @@ function dedupeHead(html) {
   return head + rest
 }
 
+const MODULEPRELOAD_RE = /<link\b[^>]*\brel="modulepreload"[^>]*>/g
+
+function hrefOf(tag) {
+  return tag.match(/href="([^"]+)"/)?.[1] || ''
+}
+
+/**
+ * Vite injects <link rel="modulepreload"> at runtime whenever a dynamic
+ * import fires, so anything the page happened to lazy-load during the
+ * prerender pass gets frozen into the static head — turning a deferred,
+ * on-demand chunk into an eager download for every visitor. Keep only the
+ * preloads the build itself emitted.
+ */
+function stripRuntimePreloads(html, allowed) {
+  return html.replace(MODULEPRELOAD_RE, (tag) => (allowed.has(hrefOf(tag)) ? tag : ''))
+}
+
 async function main() {
   try {
     await access(join(DIST, 'index.html'))
@@ -77,6 +97,12 @@ async function main() {
     console.error('dist/index.html not found — run `npm run build` first.')
     process.exit(1)
   }
+
+  // Baseline must be read before the first route overwrites dist/index.html.
+  const buildHtml = await readFile(join(DIST, 'index.html'), 'utf8')
+  const buildPreloads = new Set(
+    (buildHtml.match(MODULEPRELOAD_RE) || []).map(hrefOf).filter(Boolean),
+  )
 
   const server = await preview({
     root: join(DIST, '..'),
@@ -108,6 +134,7 @@ async function main() {
         html = `<!doctype html>\n${html}`
       }
       html = dedupeHead(html)
+      html = stripRuntimePreloads(html, buildPreloads)
 
       const outFile =
         route === '/' ? join(DIST, 'index.html') : join(DIST, route.slice(1), 'index.html')

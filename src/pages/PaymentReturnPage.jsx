@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { doc, getDoc } from 'firebase/firestore'
 import { useLocation } from 'react-router-dom'
-import { db } from '../lib/firebase.js'
+import { loadFirestore } from '../lib/firestore.js'
 import {
   isCashfreeReturnFailure,
   isCashfreeReturnPending,
@@ -82,6 +81,7 @@ export default function PaymentReturnPage() {
       let failureUrl = orderFailureUrl(null, orderId, storeHints)
 
       try {
+        const { db, doc, getDoc } = await loadFirestore()
         const ref = doc(db, 'orders', orderId)
         const snap = await getDoc(ref)
         if (!snap.exists()) {

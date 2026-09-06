@@ -61,14 +61,37 @@
 }
 
 .ft-logo-icon {
-  width: 32px;
-  height: 32px;
-  background: #31a8ff;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
+  color: #0b0e15; /* tile fill */
+  --ex-tile: #0b0e15;
+  --ex-depth: #6b7280;
+  border-radius: 8px;
+}
+
+/* Inside the tile the glyph is knocked out of the fill. */
+.ft-logo-icon .ex-face rect {
+  fill: #ffffff;
+}
+
+.ft-signature {
+  display: flex;
+  justify-content: center;
+  padding: 0 24px 44px;
+  color: #0b0e15;
+}
+
+.ft-signature .ex-mark.ex-mark--extrude {
+  --ex-step: 0px;
+  --ex-depth: #d8dce3;
+}
+
+.ft-signature.is-deep .ex-mark.ex-mark--extrude {
+  --ex-step: 3.2px;
+}
+
+.ft-signature .ex-layer {
+  transition-duration: 1.1s;
+  transition-delay: calc(var(--ex-n) * 26ms);
 }
 
 .ft-brand-name {
