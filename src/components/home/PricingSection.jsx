@@ -151,11 +151,11 @@ function PricingCard({ plan }) {
                 Download Essy
               </SecondaryButton>
             ) : plan.featured ? (
-              <PrimaryButton href={`#/checkout?plan=${plan.id}`} size="sm">
+              <PrimaryButton href={`/checkout?plan=${plan.id}`} size="sm">
                 Get {plan.name}
               </PrimaryButton>
             ) : (
-              <SecondaryButton href={`#/checkout?plan=${plan.id}`} size="sm">
+              <SecondaryButton href={`/checkout?plan=${plan.id}`} size="sm">
                 Get {plan.name}
               </SecondaryButton>
             )}

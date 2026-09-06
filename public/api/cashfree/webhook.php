@@ -49,6 +49,12 @@ try {
                 'cashfreeOrderId' => $cashfreeOrderId,
                 'cashfreePaymentId' => $paymentId,
             ]);
+
+            // Entitlement is granted here and nowhere else: this is the only
+            // point in the flow that has heard from Cashfree directly.
+            if (($orderData['product'] ?? '') === 'essy') {
+                grant_essy_plan($orderData + ['orderId' => $localOrderId]);
+            }
         }
     } elseif (($orderData['status'] ?? '') !== 'paid') {
         mark_order_failed($localOrderId, [

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Seo from './components/Seo.jsx'
 import HomePage from './pages/HomePage.jsx'
 // Checkout / payment return stay eager — UrbanCart lands here; must never 404
@@ -25,6 +25,8 @@ const CareersPage = lazy(() => import('./pages/CareersPage.jsx'))
 const PratikshaProfilePage = lazy(() => import('./pages/PratikshaProfilePage.jsx'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'))
 const DashboardPage = lazy(() => import('./pages/DashboardPage.jsx'))
+const PlanCheckout = lazy(() => import('./pages/PlanCheckout.jsx'))
+const AppLoginPage = lazy(() => import('./pages/AppLoginPage.jsx'))
 const SignupPage = lazy(() => import('./pages/AuthPages.jsx'))
 const LoginPage = lazy(() =>
   import('./pages/AuthPages.jsx').then((m) => ({ default: m.LoginPage })),
@@ -41,6 +43,21 @@ if (typeof window !== 'undefined') {
     const combined = [search, hashQuery].filter(Boolean).join('&')
     window.history.replaceState(null, '', hashPath + (combined ? `?${combined}` : ''))
   }
+}
+
+/**
+ * Which checkout to show.
+ *
+ * `?plan=` is an Essy purchase, where no order exists yet; `?orderId=` is the
+ * relay for an order another storefront already created. The choice is made
+ * here, at the route, so neither page ever sees a conditional hook order.
+ */
+function CheckoutRoute() {
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+  const plan = params.get('plan')
+  const orderId = params.get('orderId')
+  return plan && !orderId ? <PlanCheckout planId={plan} /> : <CheckoutPage />
 }
 
 function App() {
@@ -222,10 +239,12 @@ function App() {
         />
           {/* The dashboard carries its own <Seo>, since it renders two very
               different states and only one of them is a page worth titling. */}
+          <Route path="/app-login" element={<AppLoginPage />} />
+          <Route path="/app-login/" element={<AppLoginPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/" element={<DashboardPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/checkout/" element={<CheckoutPage />} />
+          <Route path="/checkout" element={<CheckoutRoute />} />
+          <Route path="/checkout/" element={<CheckoutRoute />} />
           <Route path="/payment/return" element={<PaymentReturnPage />} />
           <Route path="/payment/return/" element={<PaymentReturnPage />} />
           <Route

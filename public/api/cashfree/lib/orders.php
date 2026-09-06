@@ -68,3 +68,40 @@ function pick_latest_payment(array $payments): ?array
 
     return $payments[0];
 }
+
+/**
+ * Grant the plan an order paid for.
+ *
+ * Called only from the webhook, never from anything the browser or the
+ * desktop app can reach. The entitlement is written here because this is the
+ * one place that has heard from Cashfree directly — every other party in the
+ * flow is relaying a claim someone could have made up.
+ *
+ * Expiry extends an unexpired plan rather than replacing it, so renewing
+ * early does not throw away days already paid for.
+ */
+function grant_essy_plan(array $order): void
+{
+    $email = strtolower(trim((string) ($order['email'] ?? $order['userEmail'] ?? '')));
+    $plan = (string) ($order['plan'] ?? '');
+    $days = (int) ($order['planDays'] ?? 0);
+
+    if ($email === '' || $plan === '' || $days <= 0) {
+        return;
+    }
+
+    $existing = firestore_request('GET', firestore_document_path('users', $email));
+    $current = empty($existing['fields']) ? [] : parse_firestore_fields($existing['fields']);
+
+    $nowMs = (int) round(microtime(true) * 1000);
+    $currentExpiry = (int) ($current['planExpiresAt'] ?? 0);
+    $base = $currentExpiry > $nowMs ? $currentExpiry : $nowMs;
+
+    firestore_patch_doc('users', $email, [
+        'email' => $email,
+        'plan' => $plan,
+        'planExpiresAt' => $base + ($days * 86400000),
+        'lastOrderId' => (string) ($order['orderId'] ?? ''),
+        'updatedAt' => gmdate('c'),
+    ]);
+}

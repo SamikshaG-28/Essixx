@@ -11,7 +11,25 @@ import { fileURLToPath } from 'node:url'
 import { preview } from 'vite'
 import puppeteer from 'puppeteer'
 
-const ROUTES = ['/', '/about', '/careers', '/launch', '/pratiksha']
+/**
+ * Every route needs a real directory here, not just the crawlable ones.
+ *
+ * The host does not apply the SPA rewrite in .htaccess — measured: prerendered
+ * paths 301 to their trailing slash, everything else returns a hard 404. So a
+ * client-only route without a prerendered index.html is simply unreachable in
+ * production, however well it works locally. `/app-login` and `/dashboard`
+ * carry noindex of their own; they are listed to exist, not to be crawled.
+ */
+const ROUTES = [
+  '/',
+  '/about',
+  '/careers',
+  '/launch',
+  '/pratiksha',
+  '/checkout',
+  '/dashboard',
+  '/app-login',
+]
 const DIST = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist')
 
 /**

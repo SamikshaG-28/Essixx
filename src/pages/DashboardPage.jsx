@@ -79,7 +79,7 @@ function SignedOut({ onSignIn, busy, error }) {
 }
 
 function PlanCard({ plan, current, email }) {
-  const href = `/#/checkout?plan=${plan.id}${
+  const href = `/checkout?plan=${plan.id}${
     email ? `&email=${encodeURIComponent(email)}` : ''
   }`
   return (

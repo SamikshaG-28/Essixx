@@ -216,11 +216,23 @@ function firestore_get_order(string $orderId): ?array
 
 function firestore_patch_order(string $orderId, array $fields): void
 {
+    firestore_patch_doc('orders', $orderId, $fields);
+}
+
+/**
+ * Merge fields into any document.
+ *
+ * The update mask is what makes this a merge rather than a replace: without
+ * it Firestore drops every field the request does not mention, which on a
+ * user record would wipe the profile to grant a plan.
+ */
+function firestore_patch_doc(string $collection, string $docId, array $fields): void
+{
     $mask = [];
     foreach (array_keys($fields) as $key) {
         $mask[] = 'updateMask.fieldPaths=' . rawurlencode($key);
     }
 
-    $path = firestore_document_path('orders', $orderId) . '?' . implode('&', $mask);
+    $path = firestore_document_path($collection, $docId) . '?' . implode('&', $mask);
     firestore_request('PATCH', $path, ['fields' => encode_firestore_fields($fields)]);
 }
