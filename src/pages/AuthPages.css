@@ -383,3 +383,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Inline auth failures. Sits between the form and the alternative sign-in so
+   it reads as a response to what was just submitted. */
+.au-error {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #ff7a7a;
+  text-align: center;
+}

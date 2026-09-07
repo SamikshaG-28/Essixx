@@ -66,6 +66,59 @@ export async function ensureUserDoc(user) {
   return snap.data()
 }
 
+/**
+ * Turn Firebase's error codes into something worth reading.
+ *
+ * `auth/invalid-credential` tells a person nothing about what to do next.
+ */
+function readableAuthError(error) {
+  const code = error?.code || ''
+  if (code.includes('email-already-in-use'))
+    return 'That email already has an account. Try signing in instead.'
+  if (code.includes('invalid-credential') || code.includes('wrong-password'))
+    return "That email and password don't match."
+  if (code.includes('user-not-found'))
+    return 'No account with that email yet.'
+  if (code.includes('weak-password')) return 'Use at least six characters.'
+  if (code.includes('invalid-email')) return "That doesn't look like an email address."
+  if (code.includes('too-many-requests'))
+    return 'Too many attempts. Wait a minute and try again.'
+  if (code.includes('operation-not-allowed'))
+    return 'Email sign-in is not enabled for this project yet.'
+  return error?.message || 'Something went wrong.'
+}
+
+export async function signUpWithEmail(email, password, name) {
+  const { mod, auth } = await loadAuth()
+  try {
+    const result = await mod.createUserWithEmailAndPassword(
+      auth,
+      email.trim(),
+      password,
+    )
+    if (name) await mod.updateProfile(result.user, { displayName: name })
+    await ensureUserDoc({ ...result.user, displayName: name || '' })
+    return result.user
+  } catch (error) {
+    throw new Error(readableAuthError(error))
+  }
+}
+
+export async function signInWithEmail(email, password) {
+  const { mod, auth } = await loadAuth()
+  try {
+    const result = await mod.signInWithEmailAndPassword(
+      auth,
+      email.trim(),
+      password,
+    )
+    await ensureUserDoc(result.user)
+    return result.user
+  } catch (error) {
+    throw new Error(readableAuthError(error))
+  }
+}
+
 export async function signInWithGoogle() {
   const { mod, auth, googleProvider } = await loadAuth()
   const result = await mod.signInWithPopup(auth, googleProvider)
