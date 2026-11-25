@@ -48,7 +48,7 @@ if (typeof window !== 'undefined') {
 /**
  * Which checkout to show.
  *
- * `?plan=` is an Essy purchase, where no order exists yet; `?orderId=` is the
+ * `?plan=` is a plan purchase, where no order exists yet; `?orderId=` is the
  * relay for an order another storefront already created. The choice is made
  * here, at the route, so neither page ever sees a conditional hook order.
  */

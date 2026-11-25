@@ -6,10 +6,10 @@ const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://www.essixx.com').rep
 export const siteConfig = {
   name: 'Essixx',
   legalName: 'Essixx',
-  tagline: 'Captions for every reel',
-  title: 'Essy — AI Caption Generator for Reels | Hinglish Subtitles, Offline',
+  tagline: 'Building digital futures',
+  title: 'Essixx — Web Development & Digital Transformation Studio | Pune',
   description:
-    'Essy is a desktop caption generator for Reels, Shorts and TikTok. Auto-transcribes Hindi, English and Hinglish on your own machine, 105 caption styles, face tracking and 4K export. Free download for macOS.',
+    'Essixx is a freelance web development studio in Pune. Contact us to build your website — development starts from ₹19,999 only.',
   url: SITE_URL,
   locale: 'en_IN',
   language: 'en',
@@ -38,39 +38,33 @@ export const siteConfig = {
     github: 'https://github.com/essixx',
   },
   keywords: [
-    'Essy',
-    'caption generator',
-    'auto captions for reels',
-    'Hinglish subtitles',
-    'Hindi transcription software',
-    'subtitle generator app',
-    'video caption editor',
-    'offline captions',
-    'shorts and reels captions',
-    'caption styles',
     'Essixx',
+    'web development Pune',
+    'website design Pune',
+    'digital transformation',
+    'mobile app development',
+    'SEO friendly websites',
+    'business website India',
+    'software development company Pune',
   ],
   ogImage: `${SITE_URL}/og-image.png`,
   ogImageAlt:
-    'Essy — a desktop caption editor: Hinglish transcript, styled captions on the video, and 105 caption styles.',
+    'Essixx — premium creative and engineering, on demand. Web, apps and brand systems from Pune, India.',
   themeColor: '#0B0E15',
   foundingDate: '2014',
   priceRange: '₹₹',
   services: [
     {
-      name: 'Automatic captions',
-      description:
-        'Word-level transcription for Hindi, English and Hinglish, run on your own machine.',
+      name: 'Web Design',
+      description: 'Modern, responsive website design for businesses and individuals.',
     },
     {
-      name: 'Caption styling',
-      description:
-        '105 caption styles with per-word colour, motion and placement, plus a style builder.',
+      name: 'Web Development',
+      description: 'Freelance website development starting from ₹19,999.',
     },
     {
-      name: 'Auto-reframe',
-      description:
-        'Face tracking that keeps the speaker in frame when a clip is cut to vertical.',
+      name: 'App Development',
+      description: 'Android and iOS mobile app development, from concept to store launch.',
     },
   ],
 }
@@ -171,43 +165,24 @@ export function buildJobPostingJsonLd(job) {
 
 export function buildWebsiteOfferJsonLd() {
   const { url, name } = siteConfig
-  // SoftwareApplication, not Service: the thing being offered is a desktop
-  // app someone downloads, and describing it as a service would make it
-  // ineligible for the app rich result it actually qualifies for.
   return {
     '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    '@id': `${url}/#essy`,
-    name: 'Essy',
-    applicationCategory: 'MultimediaApplication',
-    applicationSubCategory: 'Video caption editor',
-    operatingSystem: 'macOS 12+',
-    softwareVersion: '0.1.0',
-    downloadUrl: `${url}/downloads/Essy_0.1.0_aarch64.dmg`,
-    screenshot: [absoluteUrl('/essy/editor.png'), absoluteUrl('/essy/styles-gallery.png')],
+    '@type': 'Service',
+    '@id': `${url}/#website-development`,
+    name: `${name} Website Development`,
+    serviceType: 'Website Development',
+    provider: { '@id': `${url}/#organization` },
+    areaServed: { '@type': 'Country', name: 'India' },
     description:
-      'Desktop caption generator for Reels and Shorts. Transcribes Hindi, ' +
-      'English and Hinglish locally, styles every word, tracks the speaker ' +
-      'and exports without uploading the video anywhere.',
-    publisher: { '@id': `${url}/#organization` },
-    offers: [
-      {
-        '@type': 'Offer',
-        name: 'Free',
-        price: '0',
-        priceCurrency: 'INR',
-        availability: 'https://schema.org/InStock',
-        url: `${url}/#screens`,
-      },
-      {
-        '@type': 'Offer',
-        name: `${name} Monthly`,
-        price: '199',
-        priceCurrency: 'INR',
-        availability: 'https://schema.org/InStock',
-        url: `${url}/checkout?plan=monthly`,
-      },
-    ],
+      'Freelance website development. Contact us to build your site — starting from ₹19,999 only.',
+    offers: {
+      '@type': 'Offer',
+      name: 'Website development',
+      price: '19999',
+      priceCurrency: 'INR',
+      url: `${url}/#pricing`,
+      availability: 'https://schema.org/InStock',
+    },
   }
 }
 

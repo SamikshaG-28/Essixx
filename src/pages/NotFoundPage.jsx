@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 import Seo from '../components/Seo.jsx'
-import './CheckoutPage.css'
+import SiteNav from '../components/site/SiteNav.jsx'
+import './Pages.css'
 
 export default function NotFoundPage() {
   return (
-    <div className="checkout-page">
+    <div className="page">
       <Seo
         title="Page not found — Essixx"
         description="The page you are looking for does not exist. Explore Essixx web development, app development, and digital marketing services."
@@ -12,15 +14,24 @@ export default function NotFoundPage() {
         robots="noindex, follow"
         jsonLd={[]}
       />
-      <main className="checkout-main">
-        <div className="checkout-card">
-          <p className="checkout-eyebrow">Error 404</p>
-          <h1>Page not found</h1>
-          <p className="checkout-note">
-            The page you are looking for doesn&apos;t exist or has moved.{' '}
-            <Link to="/">Go back to the Essixx homepage</Link> or explore{' '}
-            <Link to="/about">about us</Link> and <Link to="/careers">careers</Link>.
+      <SiteNav />
+      <main className="notfound">
+        <div className="wrap">
+          <p className="eyebrow">Error 404</p>
+          <h1 className="display page-title">
+            Nothing <em>here.</em>
+          </h1>
+          <p className="lead page-lead">
+            The page you&rsquo;re looking for doesn&rsquo;t exist or has moved.
           </p>
+          <div className="notfound-actions">
+            <Link className="btn btn--primary" to="/">
+              <ArrowLeft size={16} aria-hidden="true" /> Back home
+            </Link>
+            <Link className="btn btn--ghost" to="/about">
+              About us
+            </Link>
+          </div>
         </div>
       </main>
     </div>

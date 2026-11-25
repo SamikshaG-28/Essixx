@@ -1,191 +1,142 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import SynexNav from '../components/home/SynexNav.jsx'
-import OurTeamSection from '../components/home/OurTeamSection.jsx'
-import { siteConfig } from '../seo/siteConfig.js'
-import '../pages/HomePage.css'
-import './AboutPage.css'
-
-const INTRO_VIDEOS = [
-  '/videos/intro/intro-1.mp4',
-  '/videos/intro/intro-2.mp4',
-  '/videos/intro/intro-3.mp4',
-]
+import { ArrowRight } from 'lucide-react'
+import SiteNav from '../components/site/SiteNav.jsx'
+import SiteFooter from '../components/site/SiteFooter.jsx'
+import TeamGrid from '../components/site/TeamGrid.jsx'
+import { HeroReveal, Reveal } from '../components/home/Reveal.jsx'
+import { PROJECT_MAILTO } from '../components/site/links.js'
+import './Pages.css'
 
 const VALUES = [
-  { label: 'End-to-end delivery', emoji: '🚀' },
-  { label: 'Modern product design', emoji: '✨' },
-  { label: 'Ship faster', emoji: '⏳' },
-  { label: 'Built for your stack', emoji: '🛠' },
+  {
+    title: 'End-to-end delivery',
+    body: 'One team from the first workshop to the last deploy — nothing lost in hand-offs.',
+  },
+  {
+    title: 'Design that stays quiet',
+    body: 'Interfaces that get out of the way, so your content and your customers come first.',
+  },
+  {
+    title: 'Ship, then refine',
+    body: 'Working software early and often. You see real progress every week, not a big reveal.',
+  },
+  {
+    title: 'Built for your stack',
+    body: 'We pick tools that fit your team and budget — and that someone else can maintain later.',
+  },
 ]
-
-const FOOTER_LINKS = [
-  ['About Us', 'Pricing'],
-  ['FAQ', 'Blog'],
-  ['Terms & Conditions', 'Privacy Policy'],
-]
-
-const INTRO_POSTER = '/about-hero.webp'
-
-/**
- * The intro reel is optional: /videos/intro/* is not shipped in every
- * deployment. When a clip is missing the element used to render as a large
- * empty panel, so a failed load now falls back to the poster still.
- */
-function IntroVideo() {
-  const videoRef = useRef(null)
-  const [videoIndex, setVideoIndex] = useState(0)
-  const [failed, setFailed] = useState(false)
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video || failed) return
-
-    video.load()
-    video.play().catch(() => {})
-  }, [videoIndex, failed])
-
-  if (failed) {
-    return (
-      <div className="about-video-shell">
-        <img
-          className="about-video"
-          src={INTRO_POSTER}
-          alt="Essixx studio — designing and building digital products"
-          width={1200}
-          height={800}
-          decoding="async"
-        />
-      </div>
-    )
-  }
-
-  return (
-    <div className="about-video-shell">
-      <video
-        ref={videoRef}
-        key={INTRO_VIDEOS[videoIndex]}
-        className="about-video"
-        src={INTRO_VIDEOS[videoIndex]}
-        poster={INTRO_POSTER}
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-        onError={() => setFailed(true)}
-        onEnded={() => setVideoIndex((current) => (current + 1) % INTRO_VIDEOS.length)}
-      />
-    </div>
-  )
-}
 
 export default function AboutPage() {
   return (
-    <div className="about-page">
-      <SynexNav />
+    <div className="page">
+      <SiteNav />
 
       <main>
-        <section className="about-hero">
-          <p className="about-hero-eyebrow">This is why we started building Essixx</p>
-          <h1>We&apos;re here to help you shine</h1>
-
-          <IntroVideo />
-
-          <div className="about-intro-copy">
-            <p>
-              It&apos;s hard to build a great digital product alone. That&apos;s exactly why
-              Essixx was born, to make the process easier, smarter, and way less stressful.
-            </p>
-            <p>
-              We started Essixx as freelancers with a simple idea: help people focus on
-              their skills and dreams, not technical headaches. Want a website? Contact
-              us — development starts from ₹19,999 only.
-            </p>
+        <section className="page-hero">
+          <div className="wrap">
+            <HeroReveal>
+              <p className="eyebrow">About Essixx</p>
+            </HeroReveal>
+            <HeroReveal delay={0.08}>
+              <h1 className="display page-title">
+                Small studio,
+                <br />
+                <em>careful</em> work.
+              </h1>
+            </HeroReveal>
           </div>
         </section>
 
-        <section className="about-values">
-          <h2>Our value.</h2>
-          <p className="about-values-lead">Less &ldquo;ugh&rdquo;, more &ldquo;yay!&rdquo;</p>
+        <HeroReveal delay={0.18} className="wrap">
+          <figure className="about-figure">
+            <img
+              src="/about-hero.webp"
+              alt="The Essixx team at work, designing and building digital products"
+              width={1536}
+              height={1024}
+              fetchPriority="high"
+              decoding="async"
+            />
+          </figure>
+        </HeroReveal>
 
-          <ul className="about-values-list">
-            {VALUES.map((item) => (
-              <li key={item.label}>
-                <span>{item.label}</span>
-                <span aria-hidden="true">{item.emoji}</span>
-              </li>
-            ))}
-          </ul>
-
-          <p className="about-values-foot">Made for real growth 📈</p>
+        <section className="section">
+          <div className="wrap split">
+            <Reveal>
+              <p className="eyebrow">Our story</p>
+            </Reveal>
+            <Reveal delay={0.06} className="prose">
+              <p className="prose-lead serif">
+                It&rsquo;s hard to build a great digital product alone. Essixx exists to
+                make that process easier, calmer and a lot less stressful.
+              </p>
+              <p>
+                We started as freelancers with a simple idea: let people focus on their
+                craft and their customers, not on technical headaches. Today we design and
+                build websites, apps and brand systems for founders, small businesses and
+                agencies across India.
+              </p>
+              <p>
+                You work directly with the people doing the work — no account managers, no
+                agency markup. Websites start from ₹19,999.
+              </p>
+            </Reveal>
+          </div>
         </section>
 
-        <OurTeamSection showReadMore={false} />
+        <section className="section">
+          <div className="wrap">
+            <Reveal className="section-head">
+              <p className="eyebrow">What we value</p>
+              <h2 className="h2">
+                Less noise,
+                <br />
+                <em>more signal.</em>
+              </h2>
+            </Reveal>
 
-        <section className="about-closing">
-          <p>
-            We built Essixx to remove the stress from product delivery. It&apos;s not just a
-            studio, it&apos;s a way to help people dream bigger and move forward faster.
-          </p>
-          <p>
-            Behind every launch is a real story. That&apos;s why we created Essixx —
-            to make sure those stories shine.
-          </p>
-          <p className="about-signature">— Kartik Sabale, Pratiksha Relekar &amp; Kajal Sabale</p>
+            <ol className="values">
+              {VALUES.map((v, i) => (
+                <Reveal as="li" key={v.title} delay={i * 0.05} className="value">
+                  <span className="index">0{i + 1}</span>
+                  <h3>{v.title}</h3>
+                  <p>{v.body}</p>
+                </Reveal>
+              ))}
+            </ol>
+          </div>
         </section>
 
-        <section className="about-subscribe">
-          <div className="about-subscribe-row">
-            <form
-              className="about-subscribe-form"
-              onSubmit={(e) => {
-                e.preventDefault()
-              }}
-            >
-              <span>Stay updated with us</span>
-              <div className="about-subscribe-fields">
-                <input type="email" name="email" placeholder="Email address" required />
-                <button type="submit">Subscribe</button>
-              </div>
-            </form>
+        <section className="section">
+          <div className="wrap">
+            <Reveal className="section-head">
+              <p className="eyebrow">The team</p>
+              <h2 className="h2">
+                Three people,
+                <br />
+                <em>one standard.</em>
+              </h2>
+            </Reveal>
+            <TeamGrid />
+          </div>
+        </section>
 
-            <div className="about-subscribe-side">
-              <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
-              <Link to="/launch" className="about-store-btn">
-                Launch Essixx app
-              </Link>
-            </div>
+        <section className="section section--sunken">
+          <div className="wrap quote">
+            <Reveal>
+              <blockquote className="serif">
+                &ldquo;Behind every launch is a real story. We built Essixx to make sure
+                those stories shine.&rdquo;
+              </blockquote>
+              <p className="quote-by">Kartik Sabale, Pratiksha Relekar &amp; Kajal Sabale</p>
+              <a className="btn btn--primary" href={PROJECT_MAILTO}>
+                Work with us <ArrowRight size={16} aria-hidden="true" />
+              </a>
+            </Reveal>
           </div>
         </section>
       </main>
 
-      <footer className="about-footer">
-        <div className="about-footer-links">
-          {FOOTER_LINKS.map((column) => (
-            <ul key={column[0]}>
-              {column.map((link) => (
-                <li key={link}>
-                  <a href="/?scroll=contact">{link}</a>
-                </li>
-              ))}
-            </ul>
-          ))}
-
-          <div className="about-footer-socials">
-            <a href={siteConfig.social.linkedin} aria-label="LinkedIn">in</a>
-            <a href={siteConfig.social.instagram} aria-label="Instagram">ig</a>
-            <a href={siteConfig.social.twitter} aria-label="Twitter">x</a>
-          </div>
-        </div>
-
-        <div className="about-footer-banner">
-          <p>Fast, smart, easy.</p>
-          <div className="about-footer-bottom">
-            <Link to="/" className="about-footer-logo">essixx</Link>
-            <span>Essixx © {new Date().getFullYear()}. All rights reserved.</span>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

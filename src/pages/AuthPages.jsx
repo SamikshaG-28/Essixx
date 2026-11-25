@@ -1,14 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Circle, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { signInWithEmail, signInWithGoogle, signUpWithEmail } from '../lib/auth.js'
 import { useAccount } from '../lib/useAccount.js'
 import { SignOutButton } from '../components/AccountControls.jsx'
+import EssixxMark from '../components/brand/EssixxMark.jsx'
 import './AuthPages.css'
-
-const VIDEO_SRC =
-  '/video/auth.mp4'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -98,9 +96,6 @@ function InputGroup({
 function AuthHero({ title, description, steps }) {
   return (
     <aside className="au-hero">
-      <video className="au-hero-video" autoPlay muted loop playsInline preload="auto">
-        <source src={VIDEO_SRC} type="video/mp4" />
-      </video>
 
       <motion.div
         className="au-hero-content"
@@ -108,9 +103,11 @@ function AuthHero({ title, description, steps }) {
         initial="hidden"
         animate="show"
       >
-        <motion.div className="au-brand" variants={itemVariants}>
-          <Circle className="au-brand-icon" fill="white" stroke="white" size={18} />
-          <span>Essixx</span>
+        <motion.div variants={itemVariants}>
+          <Link to="/" className="au-brand ex-mark-host">
+            <EssixxMark size={18} interactive />
+            <span>Essixx</span>
+          </Link>
         </motion.div>
 
         <motion.div className="au-hero-copy" variants={itemVariants}>

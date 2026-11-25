@@ -7,23 +7,32 @@ export function Reveal({
   y = 28,
   blur = false,
   once = true,
+  as = 'div',
 }) {
   const reduce = useReducedMotion()
+  const Tag = as
+  const MotionTag = motion[as]
 
   if (reduce) {
-    return <div className={className}>{children}</div>
+    return <Tag className={className}>{children}</Tag>
   }
 
   return (
-    <motion.div
+    <MotionTag
       className={className}
-      initial={{ opacity: 0, y, filter: blur ? 'blur(12px)' : 'blur(0px)' }}
-      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      initial={blur ? { opacity: 0, y, filter: 'blur(12px)' } : { opacity: 0, y }}
+      // A leftover `filter` would make this wrapper a backdrop root and stop
+      // any liquid glass inside it from seeing the page behind.
+      whileInView={
+        blur
+          ? { opacity: 1, y: 0, filter: 'blur(0px)', transitionEnd: { filter: 'none' } }
+          : { opacity: 1, y: 0 }
+      }
       viewport={{ once, amount: 0.2 }}
       transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
-    </motion.div>
+    </MotionTag>
   )
 }
 
@@ -38,7 +47,7 @@ export function HeroReveal({ children, className = '', delay = 0 }) {
     <motion.div
       className={className}
       initial={{ opacity: 0, y: 24, filter: 'blur(14px)' }}
-      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      animate={{ opacity: 1, y: 0, filter: 'blur(0px)', transitionEnd: { filter: 'none' } }}
       transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
