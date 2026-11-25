@@ -74,7 +74,7 @@ try {
         'order_amount' => (float) $orderData['amount'],
         'order_currency' => $orderData['currency'] ?? 'INR',
         'customer_details' => [
-            'customer_id' => substr((string) ($orderData['userEmail'] ?? $orderId), 0, 80),
+            'customer_id' => cashfree_customer_id((string) ($orderData['userEmail'] ?? $orderId)),
             'customer_name' => $orderData['userName'] ?? ($address['name'] ?? 'Customer'),
             'customer_email' => $orderData['userEmail'] ?? ($body['email'] ?? ''),
             'customer_phone' => normalize_indian_phone($address['phone'] ?? '')

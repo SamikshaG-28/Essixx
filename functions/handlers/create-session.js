@@ -8,6 +8,15 @@ function normalizeIndianPhone(phone) {
   return ''
 }
 
+function cashfreeCustomerId(email, fallback = 'customer') {
+  const id = String(email || fallback)
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/^[-_]+|[-_]+$/g, '')
+    .slice(0, 50)
+  return id || 'customer'
+}
+
 function readJson(req) {
   if (typeof req.body === 'object' && req.body !== null) return req.body
   if (typeof req.body === 'string' && req.body) return JSON.parse(req.body)
@@ -90,7 +99,7 @@ export default async function handler(req, res) {
           order_amount: Number(orderData.amount),
           order_currency: orderData.currency || 'INR',
           customer_details: {
-            customer_id: (orderData.userEmail || orderId).slice(0, 80),
+            customer_id: cashfreeCustomerId(orderData.userEmail || orderId),
             customer_name: orderData.userName || orderData.address?.name || 'Customer',
             customer_email: orderData.userEmail || body.email,
             customer_phone:

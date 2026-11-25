@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Circle, Eye, EyeOff } from 'lucide-react'
 import { signInWithEmail, signInWithGoogle, signUpWithEmail } from '../lib/auth.js'
+import { useAccount } from '../lib/useAccount.js'
+import { SignOutButton } from '../components/AccountControls.jsx'
 import './AuthPages.css'
 
 const VIDEO_SRC =
@@ -127,6 +129,8 @@ function AuthHero({ title, description, steps }) {
 }
 
 function AuthShell({ children, hero }) {
+  const { user, loading } = useAccount()
+
   return (
     <main className="au-main">
       <AuthHero {...hero} />
@@ -137,10 +141,30 @@ function AuthShell({ children, hero }) {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
         >
-          {children}
+          {loading ? null : user ? (
+            <AlreadySignedIn email={user.email} />
+          ) : (
+            children
+          )}
         </motion.div>
       </section>
     </main>
+  )
+}
+
+function AlreadySignedIn({ email }) {
+  const navigate = useNavigate()
+  return (
+    <>
+      <header className="au-form-head">
+        <h2>You're signed in</h2>
+        <p>{email}</p>
+      </header>
+      <button type="button" className="au-submit" onClick={() => navigate('/dashboard')}>
+        Go to dashboard
+      </button>
+      <SignOutButton className="au-signout" />
+    </>
   )
 }
 

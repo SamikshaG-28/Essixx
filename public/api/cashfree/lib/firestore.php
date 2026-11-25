@@ -7,13 +7,42 @@ function service_account_credentials(): ?array
     $json = env_value('FIREBASE_SERVICE_ACCOUNT_JSON');
     if ($json) {
         $parsed = json_decode($json, true);
-        return is_array($parsed) ? $parsed : null;
+        if (is_array($parsed)) {
+            return $parsed;
+        }
     }
 
-    $path = env_value('FIREBASE_SERVICE_ACCOUNT_PATH', __DIR__ . '/../service-account.json');
-    if ($path && is_readable($path)) {
+    $configured = env_value('FIREBASE_SERVICE_ACCOUNT_PATH', 'service-account.json');
+    $cashfreeDir = dirname(__DIR__);
+    $candidates = [];
+    if ($configured) {
+        $candidates[] = $configured;
+        if (!str_starts_with($configured, '/')) {
+            $candidates[] = $cashfreeDir . '/' . $configured;
+            $candidates[] = __DIR__ . '/' . $configured;
+        }
+    }
+    $candidates[] = $cashfreeDir . '/service-account.json';
+    if (!empty($_SERVER['DOCUMENT_ROOT'])) {
+        $candidates[] = rtrim((string) $_SERVER['DOCUMENT_ROOT'], '/') . '/api/cashfree/service-account.json';
+    }
+    if (!empty($_SERVER['SCRIPT_FILENAME'])) {
+        $candidates[] = dirname((string) $_SERVER['SCRIPT_FILENAME']) . '/service-account.json';
+    }
+
+    $seen = [];
+    foreach ($candidates as $path) {
+        if ($path === '' || isset($seen[$path])) {
+            continue;
+        }
+        $seen[$path] = true;
+        if (!is_readable($path)) {
+            continue;
+        }
         $parsed = json_decode((string) file_get_contents($path), true);
-        return is_array($parsed) ? $parsed : null;
+        if (is_array($parsed) && !empty($parsed['private_key'])) {
+            return $parsed;
+        }
     }
 
     return null;
@@ -36,7 +65,7 @@ function google_access_token(): string
     $sa = service_account_credentials();
     if (!$sa) {
         throw new RuntimeException(
-            'Missing Firebase service account. Add FIREBASE_SERVICE_ACCOUNT_PATH or FIREBASE_SERVICE_ACCOUNT_JSON in api/cashfree/.env',
+            'Missing Firebase service account. Place service-account.json next to create-plan-session.php (api/cashfree/) or set FIREBASE_SERVICE_ACCOUNT_JSON in api/cashfree/.env',
         );
     }
 
@@ -112,6 +141,13 @@ function parse_firestore_value(array $value)
             $value['arrayValue']['values'],
         );
     }
+    if (isset($value['nullValue'])) {
+        return null;
+    }
+    if (isset($value['timestampValue'])) {
+        $ts = strtotime((string) $value['timestampValue']);
+        return $ts ? $ts * 1000 : null;
+    }
     return null;
 }
 
@@ -122,6 +158,50 @@ function parse_firestore_fields(array $fields): array
         $parsed[$key] = parse_firestore_value($value);
     }
     return $parsed;
+}
+
+function normalize_essy_plan(string $plan): string
+{
+    $value = strtolower(trim($plan));
+    if ($value === 'yearly' || str_contains($value, 'year')) {
+        return 'yearly';
+    }
+    if ($value === 'monthly' || str_contains($value, 'month')) {
+        return 'monthly';
+    }
+    return 'free';
+}
+
+/** Console timestamps, Unix seconds, or milliseconds → epoch ms. 0 = none. */
+function plan_expires_millis($raw): int
+{
+    if ($raw === null || $raw === false || $raw === '') {
+        return 0;
+    }
+    if (is_string($raw) && !is_numeric($raw)) {
+        $ts = strtotime($raw);
+        return $ts ? $ts * 1000 : 0;
+    }
+    $value = (int) $raw;
+    if ($value <= 0) {
+        return 0;
+    }
+    if ($value < 1000000000000) {
+        return $value * 1000;
+    }
+    return $value;
+}
+
+function effective_essy_plan(array $user): array
+{
+    $plan = normalize_essy_plan((string) ($user['plan'] ?? 'free'));
+    $expires = plan_expires_millis($user['planExpiresAt'] ?? 0);
+    $nowMs = (int) round(microtime(true) * 1000);
+
+    if ($plan !== 'free' && $expires > 0 && $expires < $nowMs) {
+        return ['plan' => 'free', 'expiresAt' => null];
+    }
+    return ['plan' => $plan, 'expiresAt' => $expires > 0 ? $expires : null];
 }
 
 function encode_firestore_value($value): array

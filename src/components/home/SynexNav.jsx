@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import EssixxMark from '../brand/EssixxMark.jsx'
+import { NavAuthLinks } from '../AccountControls.jsx'
 
 export const NAV_ITEMS = [
   { label: 'About', href: '/about' },
   { label: 'Careers', href: '/careers' },
-  { label: 'Projects', target: 'projects' },
-  { label: 'Clients', target: 'clients' },
-  { label: 'Hire us', target: 'pricing' },
+  { label: 'Screenshots', target: 'screens' },
+  { label: 'Plans', target: 'pricing' },
   { label: 'Studio', target: 'studio' },
   { label: 'Contact', target: 'contact' },
 ]
@@ -88,9 +88,7 @@ export default function SynexNav() {
         </nav>
 
         <div className="sx-nav-actions">
-          <Link to="/dashboard" className="sx-nav-ghost">
-            Sign in
-          </Link>
+          <NavAuthLinks linkClass="sx-nav-ghost" signedOutTo="/dashboard" />
           <button type="button" className="sx-nav-ghost" onClick={() => go('contact')}>
             Request access
           </button>
@@ -137,9 +135,11 @@ export default function SynexNav() {
             </button>
           ),
         )}
-        <Link to="/dashboard" className="sx-nav-mobile-launch" onClick={() => setOpen(false)}>
-          Sign in
-        </Link>
+        <NavAuthLinks
+          linkClass="sx-nav-mobile-launch"
+          signedOutTo="/dashboard"
+          onNavigate={() => setOpen(false)}
+        />
         <Link to="/launch" className="sx-nav-mobile-launch" onClick={() => setOpen(false)}>
           Launch app
         </Link>

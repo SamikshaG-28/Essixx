@@ -22,12 +22,10 @@ import { PLANS, UPCOMING, formatPrice, planById } from '../data/plans.js'
 import { fetchOrders, signInWithGoogle, signOut } from '../lib/auth.js'
 import { useAccount } from '../lib/useAccount.js'
 import { cn } from '../lib/utils.js'
+import { BUILDS } from '../data/downloads.js'
 import './DashboardPage.css'
 
 const EASE = [0.22, 1, 0.36, 1]
-
-/** The macOS artifact the site serves. Windows is not built yet. */
-const MAC_DOWNLOAD = '/downloads/Essy_0.1.0_aarch64.dmg'
 
 function GoogleMark() {
   return (
@@ -233,20 +231,38 @@ export default function DashboardPage() {
               <section className="db-section">
                 <h2 className="db-h2">Download Essy</h2>
                 <div className="db-downloads">
-                  <a className="db-download" href={MAC_DOWNLOAD} download>
-                    <Download size={16} aria-hidden="true" />
-                    <span>
-                      <strong>macOS</strong>
-                      <em>Apple silicon · .dmg</em>
-                    </span>
-                  </a>
-                  <div className="db-download is-soon" aria-disabled="true">
-                    <Monitor size={16} aria-hidden="true" />
-                    <span>
-                      <strong>Windows</strong>
-                      <em>Not built yet</em>
-                    </span>
-                  </div>
+                  {BUILDS.map((build) =>
+                    build.available ? (
+                      <a
+                        key={build.os}
+                        className="db-download"
+                        href={build.href}
+                        download
+                      >
+                        {build.os === 'mac' ? (
+                          <Download size={16} aria-hidden="true" />
+                        ) : (
+                          <Monitor size={16} aria-hidden="true" />
+                        )}
+                        <span>
+                          <strong>{build.os === 'mac' ? 'macOS' : 'Windows'}</strong>
+                          <em>{build.note}</em>
+                        </span>
+                      </a>
+                    ) : (
+                      <div
+                        key={build.os}
+                        className="db-download is-soon"
+                        aria-disabled="true"
+                      >
+                        <Monitor size={16} aria-hidden="true" />
+                        <span>
+                          <strong>Windows</strong>
+                          <em>{build.note}</em>
+                        </span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </section>
 

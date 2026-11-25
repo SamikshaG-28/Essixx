@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 /** The only prices that exist. Anything else is rejected outright. */
 const ESSY_PLANS = [
-    'monthly' => ['amount' => 199.0, 'label' => 'Essy Monthly', 'days' => 31],
-    'yearly'  => ['amount' => 1999.0, 'label' => 'Essy Yearly', 'days' => 366],
+    'monthly' => ['amount' => 99.0, 'label' => 'Essy Monthly', 'days' => 31],
+    'yearly'  => ['amount' => 999.0, 'label' => 'Essy Yearly', 'days' => 366],
 ];
 
 try {
@@ -74,7 +74,7 @@ try {
         'order_amount' => $plan['amount'],
         'order_currency' => 'INR',
         'customer_details' => [
-            'customer_id' => substr($email, 0, 80),
+            'customer_id' => cashfree_customer_id($email),
             'customer_name' => $name !== '' ? $name : 'Essy user',
             'customer_email' => $email,
             // Cashfree insists on a phone; plans are not shipped anywhere, so

@@ -32,14 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 /** A plan whose expiry has passed is a free plan. */
 function effective_plan(array $user): array
 {
-    $plan = (string) ($user['plan'] ?? 'free');
-    $expires = (int) ($user['planExpiresAt'] ?? 0);
-    $nowMs = (int) round(microtime(true) * 1000);
-
-    if ($plan !== 'free' && $expires > 0 && $expires < $nowMs) {
-        return ['plan' => 'free', 'expiresAt' => null];
-    }
-    return ['plan' => $plan, 'expiresAt' => $expires > 0 ? $expires : null];
+    return effective_essy_plan($user);
 }
 
 try {

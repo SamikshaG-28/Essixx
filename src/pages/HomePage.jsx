@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import HeroLanding from '../components/home/HeroLanding.jsx'
+import ScreensSection from '../components/home/ScreensSection.jsx'
 import IntroSection from '../components/home/IntroSection.jsx'
 import BenefitsSection from '../components/home/BenefitsSection.jsx'
 import IntegrationsSection from '../components/home/IntegrationsSection.jsx'
-import ProjectsSection from '../components/home/ProjectsSection.jsx'
 import PricingSection from '../components/home/PricingSection.jsx'
 import PrecisionSection from '../components/home/PrecisionSection.jsx'
 import OurTeamSection from '../components/home/OurTeamSection.jsx'
@@ -13,10 +13,10 @@ import ContactFooter from '../components/home/ContactFooter.jsx'
 import './HomePage.css'
 
 const LIVE_ITEMS = [
-  { title: 'Unified infrastructure', sub: '+ 2.4% performance impact' },
-  { title: 'Ferron live on Play Store', sub: 'Laundry billing app shipping updates' },
-  { title: 'XiPay UI kit published', sub: 'Free payment gateway kit on GitHub' },
-  { title: 'Motvyn in testing', sub: 'Landing live — Play Store release upcoming' },
+  { title: '105 caption styles', sub: 'Trending, neon, editorial and hand-drawn' },
+  { title: 'Runs on your machine', sub: 'No upload, no queue, no per-minute bill' },
+  { title: 'Hinglish transcripts', sub: 'Hindi and English in the same line' },
+  { title: 'Windows build in CI', sub: 'macOS available now' },
 ]
 
 function scrollTo(id) {
@@ -40,20 +40,22 @@ export default function HomePage() {
       <main>
         <HeroLanding />
 
+        {/* Straight after the hero: someone who has just read "Essy captions
+            your reels" wants to see it before they read anything else. */}
+        <ScreensSection />
+
         <IntroSection />
 
         <BenefitsSection />
 
         <IntegrationsSection />
 
-        <ProjectsSection />
-
         <PricingSection />
 
         <PrecisionSection />
 
         <section className="sx-live">
-          <span className="sx-live-label">Live system activity</span>
+          <span className="sx-live-label">What Essy ships with</span>
           <div className="sx-live-track-wrap">
             <div className="sx-live-track">
               {[...LIVE_ITEMS, ...LIVE_ITEMS].map((item, i) => (

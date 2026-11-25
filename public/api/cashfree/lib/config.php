@@ -50,3 +50,18 @@ function require_env(string $key): string
     }
     return $value;
 }
+
+/**
+ * Cashfree customer_id may only be letters, digits, underscore, or hyphen.
+ * The real email still goes in customer_email.
+ */
+function cashfree_customer_id(string $email, string $fallback = 'essy-user'): string
+{
+    $raw = strtolower(trim($email !== '' ? $email : $fallback));
+    $id = preg_replace('/[^a-z0-9_-]+/', '-', $raw) ?? '';
+    $id = trim($id, '-_');
+    if ($id === '') {
+        $id = 'essy-user';
+    }
+    return substr($id, 0, 50);
+}

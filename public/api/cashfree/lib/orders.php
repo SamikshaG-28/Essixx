@@ -94,7 +94,7 @@ function grant_essy_plan(array $order): void
     $current = empty($existing['fields']) ? [] : parse_firestore_fields($existing['fields']);
 
     $nowMs = (int) round(microtime(true) * 1000);
-    $currentExpiry = (int) ($current['planExpiresAt'] ?? 0);
+    $currentExpiry = plan_expires_millis($current['planExpiresAt'] ?? 0);
     $base = $currentExpiry > $nowMs ? $currentExpiry : $nowMs;
 
     firestore_patch_doc('users', $email, [

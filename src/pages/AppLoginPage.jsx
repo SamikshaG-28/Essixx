@@ -11,6 +11,7 @@ import { motion } from 'framer-motion'
 import { Check, ShieldCheck } from 'lucide-react'
 
 import Seo from '../components/Seo.jsx'
+import { SignOutButton } from '../components/AccountControls.jsx'
 import { signInWithGoogle } from '../lib/auth.js'
 import { useAccount } from '../lib/useAccount.js'
 import './DashboardPage.css'
@@ -65,7 +66,12 @@ export default function AppLoginPage() {
   // state it causes is what turns "publish once" into a render loop.
   const published = useRef(false)
   useEffect(() => {
-    if (published.current || loading || !user || !nonce) return
+    if (!user) {
+      published.current = false
+      setState('idle')
+      return
+    }
+    if (published.current || loading || !nonce) return
     published.current = true
     void publish(user)
   }, [loading, user, nonce, publish])
@@ -120,6 +126,7 @@ export default function AppLoginPage() {
                   Essy has your account. You can close this tab and go back to
                   the app.
                 </p>
+                <SignOutButton />
               </>
             ) : (
               <>
@@ -139,6 +146,7 @@ export default function AppLoginPage() {
                     ? 'Connecting Essy…'
                     : 'Continue with Google'}
                 </button>
+                {user ? <SignOutButton /> : null}
               </>
             )}
 

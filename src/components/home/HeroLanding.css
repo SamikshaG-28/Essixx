@@ -166,6 +166,12 @@
   background: #fafafa;
 }
 
+button.az-signin-btn {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
 .az-menu-btn {
   appearance: none;
   border: none;
@@ -265,6 +271,16 @@
   opacity: 0.55;
 }
 
+button.az-drawer-auth {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: inherit;
+  display: block;
+}
+
 .az-drawer-copy {
   text-align: center;
   padding: 24px;
@@ -278,12 +294,11 @@
 /* ---- Hero ---- */
 .az-hero {
   position: relative;
-  min-height: 850px;
-  padding: 160px 36px;
+  padding: 150px 36px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: hidden;
   background: var(--bg);
 }
@@ -374,7 +389,9 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 560px;
+  /* Wide enough for the two download pills to sit on one line at desktop. */
+  max-width: 620px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -538,12 +555,226 @@
   display: inline-block;
 }
 
+/*
+  Download buttons.
+
+  Built on the same pill geometry as the rest of the hero so they read as
+  part of the design rather than as a widget dropped into it. Both platforms
+  are always shown at the same size — the preferred one is distinguished by
+  fill, not by being the only real button, because a user agent guess is
+  sometimes wrong and the other platform must never look like an afterthought.
+*/
+.az-cta-row--downloads {
+  gap: 12px;
+}
+
+.az-dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 232px;
+  padding: 10px 20px 10px 14px;
+  border-radius: 999px;
+  background: #fff;
+  border: 4px solid rgb(248, 248, 248);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.az-dl:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.az-dl--primary {
+  background: var(--button-bg);
+  border-color: var(--button-bg);
+  color: var(--button-text);
+}
+
+.az-dl--primary:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14);
+}
+
+/* Not a link, so it must not invite a click. */
+.az-dl--soon {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.az-dl--soon:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.az-dl-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.az-dl-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  text-align: left;
+}
+
+.az-dl-text strong {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.az-dl-sub {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  opacity: 0.6;
+}
+
+.az-dl-arrow {
+  margin-left: auto;
+  opacity: 0.45;
+  flex-shrink: 0;
+}
+
+.az-hero-meta {
+  margin: -10px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--muted);
+}
+
+.az-hero-link {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/*
+  Caption chips in the ticker.
+
+  Drawn in the app's own faces so the strip reads as a row of captions rather
+  than as a tag list. Each one mirrors a real style from the gallery.
+*/
+.az-cap {
+  display: inline-block;
+  padding: 2px 2px;
+  font-size: 17px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.az-cap--lime {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-weight: 900;
+  color: #111;
+  background: #c4f042;
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+
+.az-cap--script {
+  font-family: 'Great Vibes', cursive;
+  font-size: 26px;
+  font-weight: 400;
+  color: #8ef23a;
+  text-shadow: 0 0 10px rgba(142, 242, 58, 0.45);
+}
+
+.az-cap--gold {
+  font-family: 'Anton', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #ffd400;
+  -webkit-text-stroke: 1.5px #14100a;
+  paint-order: stroke fill;
+}
+
+.az-cap--cyan {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-weight: 800;
+  font-style: italic;
+  color: #0f9fd0;
+}
+
+.az-cap--outline {
+  font-family: 'Anton', system-ui, sans-serif;
+  font-weight: 400;
+  color: transparent;
+  -webkit-text-stroke: 1.4px #2a2a2a;
+}
+
+.az-cap--violet {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-weight: 900;
+  background: linear-gradient(180deg, #b78cff 0%, #6d28d9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/*
+  The product shot.
+
+  Breaks out of the 620px text column — a screenshot of a four-column editor
+  is unreadable at text width. Sits above the fade so the bottom of the frame
+  dissolves into the section below rather than ending on a hard edge.
+*/
+.az-hero-shot {
+  position: relative;
+  z-index: 2;
+  width: min(1080px, 92vw);
+  margin: 44px auto 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px 14px 0 0;
+  overflow: hidden;
+  background: #08080a;
+  box-shadow: 0 30px 80px rgba(10, 12, 25, 0.28);
+}
+
+.az-shot-chrome {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  background: #101015;
+}
+
+.az-shot-chrome span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.az-hero-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .az-hero-blur {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 178px;
+  height: 90px;
   z-index: 3;
   pointer-events: none;
   background: linear-gradient(
@@ -650,6 +881,13 @@
   .az-btn-book {
     width: 100%;
     justify-content: center;
+  }
+
+  /* Stacked full-width, so the second platform is as easy to hit as the
+     first — on a phone the guess is right far less often. */
+  .az-dl {
+    width: 100%;
+    min-width: 0;
   }
 
   .az-trusted-inner {

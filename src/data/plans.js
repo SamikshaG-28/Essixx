@@ -6,6 +6,11 @@
  * rendering — runs on the user's own machine, so usage costs us nothing and
  * charging by the minute would be inventing a meter to bill against.
  *
+ * The free tier's numbers are the ones the app actually enforces, in
+ * `src/lib/entitlements.ts` of the Essy repo. If they change there, they have
+ * to change here — a plan table that promises more than the app allows is the
+ * one bug in this file a user will definitely find.
+ *
  * Prices are in paise-free rupees; Cashfree is handed the same numbers.
  */
 export const PLANS = [
@@ -14,36 +19,37 @@ export const PLANS = [
     name: 'Free',
     price: 0,
     period: '',
-    tagline: 'The editor, in full.',
+    tagline: 'The whole editor, on a short clip.',
     description:
-      'Transcribe, caption and style as much as you like. Exports carry a small Essy mark.',
+      'Everything works — the limits are on how much, not on which features.',
     features: [
-      { text: 'Unlimited transcription, on your machine', included: true },
-      { text: 'Every caption style and the style builder', included: true },
-      { text: 'Face detection and auto-reframe', included: true },
-      { text: 'Export without the Essy watermark', included: false },
+      { text: 'Clips up to 2 minutes, one project at a time', included: true },
+      { text: '10 transcriptions and 10 face detections', included: true },
+      { text: '10 caption styles, plus the style builder', included: true },
+      { text: 'All 105 caption styles', included: false },
+      { text: 'Export without the Essy mark', included: false },
       { text: '4K export', included: false },
     ],
   },
   {
     id: 'monthly',
     name: 'Monthly',
-    price: 199,
+    price: 99,
     period: '/month',
     tagline: 'Everything, renewed each month.',
     description: 'No credits, no export caps, no per-minute billing. Cancel whenever.',
     features: [
-      { text: 'Everything in Free', included: true },
+      { text: 'Any length, as many projects as you like', included: true },
+      { text: 'Unlimited transcription and face detection', included: true },
+      { text: 'All 105 caption styles', included: true },
       { text: 'Clean exports, no watermark', included: true },
       { text: '4K export at source frame rate', included: true },
-      { text: 'Every upcoming feature as it lands', included: true },
-      { text: 'Renews monthly', included: true },
     ],
   },
   {
     id: 'yearly',
     name: 'Yearly',
-    price: 1999,
+    price: 999,
     period: '/year',
     tagline: 'The same, for ten months of the price.',
     description: 'Identical to Monthly. Two months free for paying up front.',

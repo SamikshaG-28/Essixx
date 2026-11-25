@@ -97,7 +97,13 @@ export async function signUpWithEmail(email, password, name) {
       password,
     )
     if (name) await mod.updateProfile(result.user, { displayName: name })
-    await ensureUserDoc({ ...result.user, displayName: name || '' })
+    // Pass the fields explicitly. Spreading a Firebase User drops `email`
+    // because it is a getter, which used to write `users/` with an empty id.
+    await ensureUserDoc({
+      email: result.user.email,
+      displayName: name || result.user.displayName || '',
+      photoURL: result.user.photoURL || '',
+    })
     return result.user
   } catch (error) {
     throw new Error(readableAuthError(error))

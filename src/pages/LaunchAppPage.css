@@ -33,6 +33,20 @@
   color: #fff;
 }
 
+.launch-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+button.launch-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
 .launch-main {
   display: flex;
   flex-direction: column;

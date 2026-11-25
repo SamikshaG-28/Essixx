@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { PRODUCT_PROJECTS } from '../data/projects.js'
+import { NavAuthLinks } from '../components/AccountControls.jsx'
 import './LaunchAppPage.css'
 
 const STATUS_CLASS = {
@@ -70,9 +71,12 @@ export default function LaunchAppPage() {
         <Link to="/" className="launch-logo">
           essixx
         </Link>
-        <Link to="/" className="launch-back">
-          Back to site
-        </Link>
+        <div className="launch-header-actions">
+          <NavAuthLinks linkClass="launch-back" />
+          <Link to="/" className="launch-back">
+            Back to site
+          </Link>
+        </div>
       </header>
 
       <main className="launch-main">

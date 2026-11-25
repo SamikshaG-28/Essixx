@@ -12,6 +12,7 @@ import { PLANS, formatPrice, planById } from '../data/plans.js'
 import { cashfreeModeFromOrder, openCashfreeCheckout } from '../lib/cashfreeCheckout.js'
 import { signInWithGoogle } from '../lib/auth.js'
 import { useAccount } from '../lib/useAccount.js'
+import { SignOutButton } from '../components/AccountControls.jsx'
 import './DashboardPage.css'
 
 const ENDPOINT = '/api/cashfree/create-plan-session.php'
@@ -115,6 +116,7 @@ export default function PlanCheckout({ planId }) {
                 {busy ? 'Opening Cashfree…' : `Pay ₹${formatPrice(plan.price)}`}
               </button>
               <p className="db-fineprint">Paying as {email}</p>
+              <SignOutButton />
             </>
           )}
 
